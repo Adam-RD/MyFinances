@@ -1,0 +1,218 @@
+<nav class="navbar navbar-expand-lg custom-navbar shadow-sm">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-bold" style="pointer-events: none; cursor: default;">My Finances</a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNav"
+      aria-controls="navbarNav"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/home" routerLinkActive="active fw-bold text-highlight">Gastos</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/incomes" routerLinkActive="active fw-bold text-highlight">Ingresos</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/graphs" routerLinkActive="active fw-bold text-highlight">Gráficos</a>
+        </li>
+      </ul>
+      <ul class="navbar-nav ms-auto align-items-center">
+        <!-- Balance -->
+        <li class="nav-item me-3">
+          <span class="nav-link balance">
+            Balance: {{ totalBalance | currency }}
+          </span>
+        </li>
+        <!-- Logout -->
+        <li class="nav-item">
+          <a class="nav-link text-danger fw-semibold" routerLink="/login">Logout</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+
+
+
+<div class="container mt-5" *ngIf="!isLoading; else loading">
+  <!-- Contenido principal: Formularios, Listas, Tablas -->
+  <div class="row">
+    <!-- Formulario para agregar gastos -->
+    <div class="col-md-6">
+      <h2 class="mb-4 text-primary">Agregar Gastos</h2>
+      <form (ngSubmit)="addExpense()" class="shadow-sm p-4 border rounded" #expenseForm="ngForm">
+        <div class="mb-3">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Descripción"
+            [(ngModel)]="newExpense.description"
+            name="description"
+            #description="ngModel"
+            required
+          />
+          <div *ngIf="description.invalid && description.touched" class="text-danger">Descripción es requerida.</div>
+        </div>
+        <div class="mb-3">
+          <input
+            type="number"
+            class="form-control"
+            placeholder="Monto"
+            [(ngModel)]="newExpense.amount"
+            name="amount"
+            #amount="ngModel"
+            required
+            min="0.01"
+          />
+          <div *ngIf="amount.invalid && amount.touched" class="text-danger">Monto válido es requerido.</div>
+        </div>
+        <div class="mb-3">
+          <input
+            type="date"
+            class="form-control"
+            [(ngModel)]="newExpense.date"
+            name="date"
+            #date="ngModel"
+            required
+          />
+          <div *ngIf="date.invalid && date.touched" class="text-danger">Fecha es requerida.</div>
+        </div>
+        <div class="mb-3">
+          <select
+            class="form-select"
+            [(ngModel)]="newExpense.categoryId"
+            name="categoryId"
+            #categoryId="ngModel"
+            required
+          >
+            <option value="" disabled selected>Selecciona una categoría</option>
+            <option *ngFor="let category of categories" [value]="category.id">{{ category.name }}</option>
+          </select>
+          <div *ngIf="categoryId.invalid && categoryId.touched" class="text-danger">Selecciona una categoría válida.</div>
+        </div>
+        <button type="submit" class="btn btn-success w-100" [disabled]="expenseForm.invalid">Agregar</button>
+      </form>
+    </div>
+
+    <!-- Categorías -->
+    <div class="col-md-6">
+      <h2 class="mb-4 text-primary">Categorías</h2>
+      <ul class="list-group mb-4 shadow-sm">
+        <li
+          class="list-group-item d-flex justify-content-between align-items-center"
+          *ngFor="let category of categories | paginate: { itemsPerPage: 4, currentPage: categoriesPage }; let i = index"
+        >
+          <span class="fw-bold">{{ category.name }}</span>
+          <button class="btn btn-danger btn-sm" (click)="deleteCategory(category.id)">Eliminar</button>
+        </li>
+      </ul>
+      <pagination-controls
+        (pageChange)="categoriesPage = $event"
+        previousLabel="Anterior"
+        nextLabel="Siguiente"
+        class="d-flex justify-content-center mt-3"
+      ></pagination-controls>
+      <div class="input-group">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Nueva Categoría"
+          [(ngModel)]="newCategory"
+          name="newCategory"
+          #newCategoryInput="ngModel"
+          required
+        />
+        <button class="btn btn-primary" (click)="addCategory()" [disabled]="newCategoryInput.invalid">Agregar</button>
+      </div>
+      <div *ngIf="newCategoryInput.invalid && newCategoryInput.touched" class="text-danger mt-2">El nombre de la categoría es requerido.</div>
+    </div>
+  </div>
+
+  <!-- Tabla de Resumen y Detalles -->
+  <div class="row mt-5">
+    <!-- Resumen de Gastos -->
+    <div class="col-md-6">
+      <h2 class="mb-4 text-primary">Resumen de Gastos</h2>
+      <div class="card shadow-sm border-0">
+        <table class="table table-bordered text-center table-hover shadow-sm">
+          <thead class="table-gradient">
+            <tr>
+              <th>Descripción</th>
+              <th>Monto</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Total:</strong></td>
+              <td class="text-success">{{ summary.totalExpenses | currency }}</td>
+            </tr>
+            <tr>
+              <td><strong>Esta Semana:</strong></td>
+              <td class="text-info">{{ summary.weeklyExpenses | currency }}</td>
+            </tr>
+            <tr>
+              <td><strong>Este Mes:</strong></td>
+              <td class="text-warning">{{ summary.monthlyExpenses | currency }}</td>
+            </tr>
+            <tr>
+              <td><strong>Este Año:</strong></td>
+              <td class="text-danger">{{ summary.yearlyExpenses | currency }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Detalles de Gastos -->
+    <div class="col-md-6">
+      <h2 class="mb-4 text-primary">Detalles de Gastos</h2>
+      <table class="table table-striped shadow-sm">
+        <thead class="table-primary">
+          <tr>
+            <th>#</th>
+            <th>Descripción</th>
+            <th>Monto</th>
+            <th>Fecha</th>
+            <th>Categoría</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let expense of expenses | paginate: { itemsPerPage: 5, currentPage: currentPage }; let i = index">
+            <td>{{ i + 1 + (currentPage - 1) * 5 }}</td>
+            <td>{{ expense.description }}</td>
+            <td>{{ expense.amount | currency }}</td>
+            <td>{{ expense.date | date }}</td>
+            <td>{{ expense.categoryName }}</td>
+            <td>
+              <button class="btn btn-danger btn-sm" (click)="deleteExpense(expense.id)">Eliminar</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <pagination-controls
+        (pageChange)="currentPage = $event"
+        previousLabel="Anterior"
+        nextLabel="Siguiente"
+        class="d-flex justify-content-center mt-3"
+      ></pagination-controls>
+    </div>
+  </div>
+</div>
+
+<ng-template #loading>
+  <div class="d-flex justify-content-center align-items-center vh-100">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+  </div>
+</ng-template>

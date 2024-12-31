@@ -1,0 +1,167 @@
+/* Navbar Background */
+.custom-navbar {
+  background: linear-gradient(90deg, #17a2b8, #6f42c1); /* Tonos turquesa y púrpura */
+  color: #f8f9fa; /* Texto blanco claro */
+  border-bottom: 3px solid #ffc107; /* Línea inferior de acento */
+}
+
+.navbar .balance {
+  color: #ffc107; /* Color amarillo (Bootstrap Warning Color) */
+  font-weight: bold;
+  font-size: 1.1rem; /* Aumentar ligeramente el tamaño de la fuente */
+}
+
+
+/* Navbar Brand */
+.custom-navbar .navbar-brand {
+  color: #f8f9fa; /* Blanco claro */
+  font-size: 1.8rem;
+  font-weight: bold;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5); /* Sombreado sutil */
+  letter-spacing: 0.05rem; /* Espaciado entre letras */
+}
+
+/* Navbar Links */
+.custom-navbar .nav-link {
+  color: #f8f9fa; /* Blanco claro */
+  transition: color 0.3s ease-in-out, font-weight 0.3s ease-in-out;
+}
+
+.custom-navbar .nav-link:hover {
+  color: #ffeeba; /* Amarillo claro para hover */
+  font-weight: bold;
+}
+
+.custom-navbar .nav-link.active {
+  color: #ffc107; /* Amarillo dorado para enlace activo */
+  font-weight: bold;
+  border-bottom: 2px solid #ffc107; /* Indicador de enlace activo */
+}
+
+/* Logout Link */
+.custom-navbar .nav-link.text-danger {
+  font-weight: bold;
+  color: #e74c3c; /* Rojo intenso */
+  transition: color 0.3s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.custom-navbar .nav-link.text-danger:hover {
+  color: #ff6b6b; /* Rojo suave para hover */
+  transform: scale(1.1); /* Efecto de ampliación al pasar el mouse */
+}
+
+/* General Container */
+.container {
+  margin-top: 20px;
+}
+
+/* Gráficos */
+canvas {
+  max-height: 400px;
+  max-width: 100%;
+  border-radius: 0.5rem; /* Bordes redondeados */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Sombra para destacar */
+}
+
+/* Tablas Estilizadas */
+.table {
+  border: 1px solid #dee2e6; /* Borde suave */
+  border-radius: 0.5rem; /* Bordes redondeados */
+  overflow: hidden; /* Esquinas redondeadas visibles */
+  background-color: #f8f9fa; /* Fondo claro */
+}
+
+.table th {
+  background: linear-gradient(90deg, #17a2b8, #6f42c1); /* Gradiente turquesa y púrpura */
+  color: #f8f9fa; /* Texto blanco */
+  font-weight: bold;
+  text-align: center;
+  padding: 12px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3); /* Sombra ligera */
+}
+
+.table td {
+  padding: 12px;
+  text-align: center;
+  vertical-align: middle;
+  color: #495057; /* Texto gris oscuro */
+  font-size: 0.95rem;
+}
+
+.table tbody tr:nth-child(odd) {
+  background-color: #e9ecef; /* Color alternativo claro */
+}
+
+.table tbody tr:nth-child(even) {
+  background-color: #f8f9fa; /* Color alternativo blanco */
+}
+
+.table tbody tr:hover {
+  background-color: #dfe7f2; /* Color de fondo al pasar el mouse */
+  transition: background-color 0.3s ease-in-out; /* Transición suave */
+}
+
+/* Borde personalizado para tablas */
+.table-striped {
+  border: 2px solid #6f42c1; /* Color púrpura para el borde principal */
+}
+
+/* Encabezados de Tablas */
+.table-primary thead {
+  background: linear-gradient(90deg, #17a2b8, #6f42c1); /* Fondo con gradiente */
+}
+
+/* Títulos de Sección */
+.table-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  text-align: center;
+  color: #6f42c1; /* Color púrpura */
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); /* Sombra ligera */
+}
+
+/* Estilo para tabla de Resumen de Gastos */
+.table-bordered {
+  border: 2px solid #6c757d;
+  border-radius: 10px;
+  background-color: #ffffff;
+}
+
+.table-hover tbody tr:hover {
+  background-color: #f8f9fa;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.table-gradient {
+  background: linear-gradient(90deg, #17a2b8, #6f42c1);
+  color: #ffffff;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+.table tbody td {
+  vertical-align: middle;
+  padding: 15px;
+  font-size: 1rem;
+}
+
+.table tbody td.text-success {
+  color: #28a745;
+  font-weight: bold;
+}
+
+.table tbody td.text-info {
+  color: #17a2b8;
+  font-weight: bold;
+}
+
+.table tbody td.text-warning {
+  color: #ffc107;
+  font-weight: bold;
+}
+
+.table tbody td.text-danger {
+  color: #dc3545;
+  font-weight: bold;
+}

@@ -1,0 +1,226 @@
+<nav class="navbar navbar-expand-lg custom-navbar shadow-sm">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-bold">My Finances</a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNav"
+      aria-controls="navbarNav"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/home" routerLinkActive="active fw-bold text-highlight">Gastos</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/incomes" routerLinkActive="active fw-bold text-highlight">Ingresos</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/graphs" routerLinkActive="active fw-bold text-highlight">Gráficos</a>
+        </li>
+      </ul>
+      <ul class="navbar-nav ms-auto align-items-center">
+        <!-- Balance -->
+        <li class="nav-item me-3">
+          <span class="nav-link balance">
+            Balance: {{ incomeSummary.balance | currency }}
+          </span>
+        </li>
+        <!-- Logout -->
+        <li class="nav-item">
+          <a class="nav-link text-danger fw-semibold" routerLink="/login">Logout</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+
+<div class="container mt-5">
+  <h2 class="text-primary mb-4">Gestión de Ingresos</h2>
+
+  <!-- Spinner -->
+  <div *ngIf="isLoading" class="d-flex justify-content-center align-items-center vh-100">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+  </div>
+
+  <div *ngIf="!isLoading">
+    <!-- Primera fila: Formulario y Lista de Ingresos -->
+    <div class="row">
+      <!-- Formulario para Agregar Ingresos -->
+      <div class="col-md-6">
+        <div class="card mb-4">
+          <div class="card-header bg-primary text-white">Agregar Ingreso</div>
+          <div class="card-body">
+            <form (ngSubmit)="addIncome()" #incomeForm="ngForm" class="shadow-sm p-4 border rounded">
+              <!-- Campo Descripción -->
+              <div class="mb-3">
+                <label for="description" class="form-label">Descripción</label>
+                <input
+                  type="text"
+                  id="description"
+                  class="form-control"
+                  placeholder="Descripción del ingreso"
+                  [(ngModel)]="newIncome.description"
+                  name="description"
+                  #description="ngModel"
+                  required
+                />
+                <div *ngIf="description.invalid && description.touched" class="text-danger">
+                  La descripción es requerida.
+                </div>
+              </div>
+
+              <!-- Campo Monto -->
+              <div class="mb-3">
+                <label for="amount" class="form-label">Monto</label>
+                <input
+                  type="number"
+                  id="amount"
+                  class="form-control"
+                  placeholder="Monto del ingreso"
+                  [(ngModel)]="newIncome.amount"
+                  name="amount"
+                  #amount="ngModel"
+                  required
+                  min="0.01"
+                />
+                <div *ngIf="amount.invalid && amount.touched" class="text-danger">
+                  El monto debe ser mayor a 0.
+                </div>
+              </div>
+
+              <!-- Campo Fecha -->
+              <div class="mb-3">
+                <label for="date" class="form-label">Fecha</label>
+                <input
+                  type="date"
+                  id="date"
+                  class="form-control"
+                  [(ngModel)]="newIncome.date"
+                  name="date"
+                  #date="ngModel"
+                  required
+                />
+                <div *ngIf="date.invalid && date.touched" class="text-danger">
+                  La fecha es requerida.
+                </div>
+              </div>
+
+              <!-- Botón Agregar -->
+              <button type="submit" class="btn btn-success w-100" [disabled]="incomeForm.invalid">
+                Agregar Ingreso
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lista de Ingresos -->
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header bg-success text-white">Lista de Ingresos</div>
+          <div class="card-body">
+            <table class="table table-striped text-center">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Descripción</th>
+                  <th>Monto</th>
+                  <th>Fecha</th>
+                  <th>Acción</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let income of incomes | paginate: { itemsPerPage: 4, currentPage: currentPage }; let i = index">
+                  <td>{{ i + 1 + (currentPage - 1) * 5 }}</td>
+                  <td>{{ income.description }}</td>
+                  <td>{{ income.amount | currency }}</td>
+                  <td>{{ income.date | date }}</td>
+                  <td>
+                    <button class="btn btn-danger btn-sm" (click)="deleteIncome(income.id)">
+                      Eliminar
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <pagination-controls
+            (pageChange)="currentPage = $event"
+            [previousLabel]="'Anterior'"
+            [nextLabel]="'Siguiente'"
+            [maxSize]="4"
+            [directionLinks]="true"
+            [autoHide]="true"
+            class="d-flex justify-content-center mt-3"
+          ></pagination-controls>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Segunda fila: Resumen de Ingresos y Balance -->
+    <div class="row">
+      <!-- Tabla de Resumen de Ingresos -->
+      <div class="col-md-6">
+        <div class="card mb-4">
+          <div class="card-header bg-info text-white">Resumen de Ingresos</div>
+          <div class="card-body">
+            <table class="table table-bordered text-center">
+              <thead>
+                <tr>
+                  <th>Total Ingresos</th>
+                  <th>Ingresos Semanales</th>
+                  <th>Ingresos Mensuales</th>
+                  <th>Ingresos Anuales</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>{{ incomeSummary.totalIncomes | currency }}</td>
+                  <td>{{ incomeSummary.weeklyIncomes | currency }}</td>
+                  <td>{{ incomeSummary.monthlyIncomes | currency }}</td>
+                  <td>{{ incomeSummary.yearlyIncomes | currency }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabla de Balance -->
+      <div class="col-md-6">
+        <div class="card mb-4">
+          <div class="card-header bg-primary text-white">Balance</div>
+          <div class="card-body">
+            <table class="table table-bordered text-center">
+              <thead>
+                <tr>
+                  <th>Total Ingresos</th>
+                  <th>Total Gastos</th>
+                  <th>Balance</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>{{ incomeSummary.totalIncomes | currency }}</td>
+                  <td>{{ incomeSummary.totalExpenses | currency }}</td>
+                  <td>{{ incomeSummary.balance | currency }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
