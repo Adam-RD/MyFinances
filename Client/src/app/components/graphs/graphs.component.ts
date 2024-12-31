@@ -90,7 +90,7 @@ export class GraphsComponent implements OnInit {
     };
 
     // Crear el gráfico con configuración válida
-   // this.charts[chartId] = new Chart(canvas, chartConfig);
+  // this.charts[chartId] = new Chart(canvas, chartConfig);
   }
 
   calculateProportionalData(totalExpenseForRange: number): any[] {
