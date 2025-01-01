@@ -22,6 +22,7 @@ export class HomeComponent implements OnInit {
   isLoading = false;
   newCategory = '';
   newExpense: any = { description: '', amount: 0, date: '', categoryId: 0 };
+  maxDate: string = '';
 
   constructor(
     private categoryService: CategoryService,
@@ -32,6 +33,15 @@ export class HomeComponent implements OnInit {
 
   ngOnInit() {
     this.initializeData();
+    this.setMaxDate();
+  }
+
+  setMaxDate() {
+    const currentDate = new Date();
+    const year = currentDate.getFullYear();
+    const month = (currentDate.getMonth() + 1).toString().padStart(2, '0'); // Meses van de 0 a 11
+    const day = currentDate.getDate().toString().padStart(2, '0');
+    this.maxDate = `${year}-${month}-${day}`;
   }
 
   async initializeData() {
@@ -49,6 +59,10 @@ export class HomeComponent implements OnInit {
       this.isLoading = false;
     }
   }
+
+  // Métodos de carga, cálculo y manipulación permanecen sin cambios.
+
+
 
   async loadCategories(): Promise<void> {
     try {

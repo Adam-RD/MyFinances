@@ -75,17 +75,20 @@
           />
           <div *ngIf="amount.invalid && amount.touched" class="text-danger">Monto válido es requerido.</div>
         </div>
+
         <div class="mb-3">
           <input
             type="date"
             class="form-control"
             [(ngModel)]="newExpense.date"
             name="date"
+            [max]="maxDate"
             #date="ngModel"
             required
           />
-          <div *ngIf="date.invalid && date.touched" class="text-danger">Fecha es requerida.</div>
+          <div *ngIf="date.invalid && date.touched" class="text-danger">Fecha es requerida y no puede ser futura.</div>
         </div>
+
         <div class="mb-3">
           <select
             class="form-select"

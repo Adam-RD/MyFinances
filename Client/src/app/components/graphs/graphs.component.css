@@ -85,3 +85,15 @@
   background-color: #343a40;
   color: white;
 }
+
+.table-gradient {
+  background: linear-gradient(to right, #6a11cb, #2575fc);
+}
+
+.legend-color {
+  display: inline-block;
+}
+
+.chart {
+  margin-top: 20px;
+}

@@ -7,12 +7,15 @@ import { ToastrService } from 'ngx-toastr';
 import { LoginRequest } from '../Models/LoginRequest';
 import { LoginResponse } from '../Models/LoginResponse';
 import { RegisterRequest } from '../Models/RegisterRequest';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private apiUrl = 'https://localhost:7096/api';
+
+  private apiUrl = environment.apiUrl;
+
   isLoggedIn = signal(false);
 
   constructor(private http: HttpClient, private router: Router, public toastr: ToastrService) {}

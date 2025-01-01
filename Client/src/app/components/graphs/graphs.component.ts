@@ -16,8 +16,9 @@ export class GraphsComponent implements OnInit {
     expensesByCategory: [],
   };
   chartData: { name: string; value: number }[] = [];
-  selectedChart: string = 'weekly';
+  selectedChart: string = 'total';
   isLoading: boolean = false;
+  totalExpenses: number = 0;
 
   colorScheme: { name: string; selectable: boolean; group: ScaleType; domain: string[] } = {
     name: 'dynamic',
@@ -62,9 +63,11 @@ export class GraphsComponent implements OnInit {
         name: item.categoryName,
         value: item.totalAmount,
       }));
+      this.totalExpenses = this.chartData.reduce((sum, item) => sum + item.value, 0); // Calcula el total de gastos
     } else {
       console.error('selectedChart no es válido.');
       this.chartData = [];
+      this.totalExpenses = 0; // Restablece el total si no hay datos
     }
   }
 
@@ -86,7 +89,7 @@ export class GraphsComponent implements OnInit {
   getChartTitle(): string {
     switch (this.selectedChart) {
       case 'weekly':
-        return 'Gastos de esta semana';
+        return 'Gastos de los ultimos 7 días';
       case 'monthly':
         return 'Gastos de este mes';
       case 'yearly':

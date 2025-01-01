@@ -37,11 +37,11 @@
 <div class="container mt-4">
   <h2 class="text-primary mb-4 text-center">Gráficos de Gastos</h2>
 
-  <div class="selector-container mb-4">
-    <label for="chartSelector" class="form-label">Selecciona un gráfico:</label>
+  <div class="selector-container mb-4 text-center">
+    <label for="chartSelector" class="form-label fw-bold text-secondary">Selecciona un gráfico:</label>
     <select
       id="chartSelector"
-      class="form-select"
+      class="form-select w-50 mx-auto shadow-sm border-primary"
       [(ngModel)]="selectedChart"
       (change)="onChartSelectionChange()"
     >
@@ -58,9 +58,9 @@
     </div>
   </div>
 
-  <div class="chart-container card shadow-lg" *ngIf="!isLoading && chartData.length > 0">
+  <div class="chart-container card shadow-lg border-0" *ngIf="!isLoading && chartData.length > 0">
     <div class="card-body">
-      <h5 class="card-title text-secondary text-center">{{ getChartTitle() }}</h5>
+      <h5 class="card-title text-secondary text-center fw-bold">{{ getChartTitle() }}</h5>
       <ngx-charts-pie-chart
         [results]="chartData"
         [scheme]="colorScheme"
@@ -69,16 +69,21 @@
         [legend]="false"
         [animations]="true"
         [arcWidth]="0.25"
-        class="mx-auto"
+        class="mx-auto chart"
+        style="height: 400px; width: 400px;"
       >
       </ngx-charts-pie-chart>
     </div>
   </div>
 
   <div *ngIf="chartData.length > 0" class="legend-table-container mt-4">
-    <h5 class="text-secondary text-center">Leyenda</h5>
-    <table class="table table-bordered table-hover text-center">
-      <thead class="table-dark">
+    <div class="text-center mb-3 p-2 bg-light rounded shadow-sm">
+      <strong class="fs-5 text-dark">Total de gastos:</strong> 
+      <span class="fs-5 text-success fw-bold">{{ totalExpenses | currency }}</span>
+    </div>
+    <h5 class="text-secondary text-center fw-bold">Leyenda</h5>
+    <table class="table table-bordered table-hover text-center shadow-sm">
+      <thead class="table-gradient text-white">
         <tr>
           <th>Color</th>
           <th>Categoría</th>
@@ -86,9 +91,13 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let item of chartData; let i = index">
+        <tr *ngFor="let item of chartData; let i = index" class="align-middle">
           <td>
-            <div class="legend-color" [style.background-color]="colorScheme.domain[i]"></div>
+            <div 
+              class="legend-color mx-auto rounded-circle" 
+              [style.background-color]="colorScheme.domain[i]" 
+              style="height: 20px; width: 20px;"
+            ></div>
           </td>
           <td class="fw-semibold">{{ item.name }}</td>
           <td class="text-primary fw-bold">{{ item.value | currency }}</td>
