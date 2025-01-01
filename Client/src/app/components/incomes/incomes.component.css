@@ -1,69 +1,61 @@
 .navbar .balance {
-  color: #ffc107; /* Color amarillo */
+  color: #ffc107;
   font-weight: bold;
-  font-size: 1.1rem; /* Tamaño de fuente ligeramente mayor */
+  font-size: 1.1rem;
 }
 
-
-/* Navbar Background */
 .custom-navbar {
-  background: linear-gradient(90deg, #17a2b8, #6f42c1); /* Tonos turquesa y púrpura */
-  color: #f8f9fa; /* Texto blanco claro */
-  border-bottom: 3px solid #ffc107; /* Línea inferior de acento */
+  background: linear-gradient(90deg, #17a2b8, #6f42c1);
+  color: #f8f9fa;
+  border-bottom: 3px solid #ffc107;
 }
 
-/* Navbar Brand */
 .custom-navbar .navbar-brand {
-  color: #f8f9fa; /* Blanco claro */
+  color: #f8f9fa;
   font-size: 1.8rem;
   font-weight: bold;
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5); /* Sombreado sutil */
-  letter-spacing: 0.05rem; /* Espaciado entre letras */
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+  letter-spacing: 0.05rem;
 }
 
-/* Navbar Links */
 .custom-navbar .nav-link {
-  color: #f8f9fa; /* Blanco claro */
+  color: #f8f9fa;
   transition: color 0.3s ease-in-out, font-weight 0.3s ease-in-out;
 }
 
 .custom-navbar .nav-link:hover {
-  color: #ffeeba; /* Amarillo claro para hover */
+  color: #ffeeba;
   font-weight: bold;
 }
 
 .custom-navbar .nav-link.active {
-  color: #ffc107; /* Amarillo dorado para enlace activo */
+  color: #ffc107;
   font-weight: bold;
-  border-bottom: 2px solid #ffc107; /* Indicador de enlace activo */
+  border-bottom: 2px solid #ffc107;
 }
 
-/* Logout Link */
 .custom-navbar .nav-link.text-danger {
   font-weight: bold;
-  color: #e74c3c; /* Rojo intenso */
+  color: #e74c3c;
   transition: color 0.3s ease-in-out, transform 0.2s ease-in-out;
 }
 
 .custom-navbar .nav-link.text-danger:hover {
-  color: #ff6b6b; /* Rojo suave para hover */
-  transform: scale(1.1); /* Efecto de ampliación al pasar el mouse */
+  color: #ff6b6b;
+  transform: scale(1.1);
 }
 
-/* General Container */
 .container {
   margin-top: 20px;
 }
 
-/* Gráficos */
 canvas {
   max-height: 400px;
   max-width: 100%;
-  border-radius: 0.5rem; /* Bordes redondeados */
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Sombra para destacar */
+  border-radius: 0.5rem;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Estilos generales para las tablas */
 .table {
   border-collapse: collapse;
   width: 100%;
@@ -74,7 +66,6 @@ canvas {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* Bordes y espaciado */
 .table th,
 .table td {
   padding: 1rem;
@@ -82,7 +73,6 @@ canvas {
   border: 1px solid #ccc;
 }
 
-/* Estilo del encabezado */
 .table thead th {
   background-color: #343a40;
   color: #ffffff;
@@ -92,31 +82,26 @@ canvas {
   border-bottom: 2px solid #444;
 }
 
-/* Estilo de las filas impares */
 .table tbody tr:nth-of-type(odd) {
   background-color: #f7f7f7;
 }
 
-/* Hover para las filas */
 .table tbody tr:hover {
   background-color: #e2e6ea;
   transition: background-color 0.3s ease;
 }
 
-/* Centrado de texto */
 .table th,
 .table td {
   text-align: left;
   padding-left: 1.5rem;
 }
 
-/* Estilo de las celdas con texto importante */
 .table td.important {
   font-weight: bold;
   color: #17a2b8;
 }
 
-/* Botones dentro de las tablas */
 .table .btn {
   padding: 0.5rem 1rem;
   font-size: 0.85rem;
@@ -134,7 +119,6 @@ canvas {
   color: white;
 }
 
-/* Responsive para tablas */
 .table-responsive {
   overflow-x: auto;
 }

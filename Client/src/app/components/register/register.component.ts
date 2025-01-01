@@ -4,16 +4,17 @@ import { Router } from '@angular/router';
 import { RegisterRequest } from '../../Models/RegisterRequest';
 
 @Component({
-  selector: 'app-register',
-  templateUrl: './register.component.html',
-  styleUrls: ['./register.component.css'],
+    selector: 'app-register',
+    templateUrl: './register.component.html',
+    styleUrls: ['./register.component.css'],
+    standalone: false
 })
 export class RegisterComponent {
   registerData: RegisterRequest = { username: '', password: '', confirmPassword: '' };
   isLoading = false;
-  passwordMismatch = false; // Estado para verificar si las contraseñas coinciden
-  showPassword = false; // Control de visibilidad de la contraseña principal
-  showConfirmPassword = false; // Control de visibilidad de la confirmación de contraseña
+  passwordMismatch = false;
+  showPassword = false;
+  showConfirmPassword = false;
 
   constructor(private authService: AuthService, private router: Router) {}
 

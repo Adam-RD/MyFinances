@@ -8,7 +8,7 @@ namespace Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize]
+    
     public class ExpensesController : ControllerBase
     {
         private readonly IExpenseRepository _expenseRepository;
@@ -29,10 +29,9 @@ namespace Api.Controllers
 
             var userId = int.Parse(userIdClaim);
 
-           
             var expenses = await _expenseRepository.GetExpensesByUserAsync(userId);
             var expenseDtos = expenses
-                .OrderByDescending(expense => expense.Date) 
+                .OrderByDescending(expense => expense.Date)
                 .Select(expense => new ExpenseResponseDto
                 {
                     Id = expense.Id,
@@ -46,7 +45,6 @@ namespace Api.Controllers
             return Ok(expenseDtos);
         }
 
-
         [HttpGet("summary")]
         public async Task<IActionResult> GetExpenseSummary()
         {
@@ -58,11 +56,14 @@ namespace Api.Controllers
 
             var userId = int.Parse(userIdClaim);
 
+            var sevenDaysAgo = DateTime.UtcNow.AddDays(-7);
+            var startOfMonth = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1);
+            var startOfYear = new DateTime(DateTime.UtcNow.Year, 1, 1);
+
             var totalExpenses = await _expenseRepository.GetTotalExpensesByUserAsync(userId);
-            var weeklyExpenses = await _expenseRepository.GetWeeklyExpensesByUserAsync(userId);
-            var monthlyExpenses = await _expenseRepository.GetMonthlyExpensesByUserAsync(userId);
-            var yearlyExpenses = await _expenseRepository.GetYearlyExpensesByUserAsync(userId);
-            var expensesByCategory = await _expenseRepository.GetExpensesByCategoryAsync(userId);
+            var weeklyExpenses = await _expenseRepository.GetExpensesByUserAndDateRangeAsync(userId, sevenDaysAgo, DateTime.UtcNow);
+            var monthlyExpenses = await _expenseRepository.GetExpensesByUserAndDateRangeAsync(userId, startOfMonth, DateTime.UtcNow);
+            var yearlyExpenses = await _expenseRepository.GetExpensesByUserAndDateRangeAsync(userId, startOfYear, DateTime.UtcNow);
 
             var summary = new ExpenseSummaryDto
             {
@@ -70,12 +71,32 @@ namespace Api.Controllers
                 WeeklyExpenses = weeklyExpenses.Sum(e => e.Amount),
                 MonthlyExpenses = monthlyExpenses.Sum(e => e.Amount),
                 YearlyExpenses = yearlyExpenses.Sum(e => e.Amount),
-                ExpensesByCategory = expensesByCategory
+                WeeklyExpensesByCategory = weeklyExpenses
+                    .GroupBy(e => e.Category.Name)
+                    .Select(group => new ExpenseByCategoryDto
+                    {
+                        CategoryName = group.Key,
+                        TotalAmount = group.Sum(e => e.Amount)
+                    }),
+                MonthlyExpensesByCategory = monthlyExpenses
+                    .GroupBy(e => e.Category.Name)
+                    .Select(group => new ExpenseByCategoryDto
+                    {
+                        CategoryName = group.Key,
+                        TotalAmount = group.Sum(e => e.Amount)
+                    }),
+                YearlyExpensesByCategory = yearlyExpenses
+                    .GroupBy(e => e.Category.Name)
+                    .Select(group => new ExpenseByCategoryDto
+                    {
+                        CategoryName = group.Key,
+                        TotalAmount = group.Sum(e => e.Amount)
+                    }),
+                ExpensesByCategory = await _expenseRepository.GetExpensesByCategoryAsync(userId)
             };
 
             return Ok(summary);
         }
-
 
         [HttpPost]
         public async Task<IActionResult> AddExpense([FromBody] ExpenseCreateDto expenseDto)
@@ -101,6 +122,38 @@ namespace Api.Controllers
             return CreatedAtAction(nameof(GetExpenses), new { id = expense.Id }, expense);
         }
 
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateExpense(int id, [FromBody] ExpenseCreateDto expenseDto)
+        {
+            var userIdClaim = User.FindFirst("userId")?.Value;
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                return Unauthorized("UserId is missing in the token.");
+            }
+
+            var userId = int.Parse(userIdClaim);
+
+            var expense = new Expense
+            {
+                Id = id,
+                Description = expenseDto.Description,
+                Amount = expenseDto.Amount,
+                Date = expenseDto.Date,
+                CategoryId = expenseDto.CategoryId,
+                UserId = userId
+            };
+
+            try
+            {
+                await _expenseRepository.UpdateExpenseAsync(expense);
+                return NoContent();
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteExpense(int id)
         {
@@ -114,5 +167,54 @@ namespace Api.Controllers
             await _expenseRepository.DeleteExpenseAsync(id, userId);
             return NoContent();
         }
+
+        [HttpGet("range")]
+        public async Task<IActionResult> GetExpensesByDateRange([FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
+        {
+            var userIdClaim = User.FindFirst("userId")?.Value;
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                return Unauthorized("UserId is missing in the token.");
+            }
+
+            var userId = int.Parse(userIdClaim);
+
+            if (startDate > endDate)
+            {
+                return BadRequest("La fecha inicial no puede ser mayor que la fecha final.");
+            }
+
+            var expenses = await _expenseRepository.GetExpensesByUserAndDateRangeAsync(userId, startDate, endDate);
+            var expenseDtos = expenses
+                .OrderByDescending(expense => expense.Date)
+                .Select(expense => new ExpenseResponseDto
+                {
+                    Id = expense.Id,
+                    Description = expense.Description,
+                    Amount = expense.Amount,
+                    Date = expense.Date,
+                    CategoryName = expense.Category?.Name
+                })
+                .ToList();
+
+            return Ok(expenseDtos);
+        }
+
+        [HttpGet("categories-summary")]
+        public async Task<IActionResult> GetExpensesByCategoriesSummary()
+        {
+            var userIdClaim = User.FindFirst("userId")?.Value;
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                return Unauthorized("UserId is missing in the token.");
+            }
+
+            var userId = int.Parse(userIdClaim);
+
+            var expensesByCategory = await _expenseRepository.GetExpensesByCategoryAsync(userId);
+
+            return Ok(expensesByCategory);
+        }
+
     }
 }

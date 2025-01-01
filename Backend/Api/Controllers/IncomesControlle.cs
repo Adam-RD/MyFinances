@@ -55,20 +55,20 @@ namespace Api.Controllers
             var userId = int.Parse(userIdClaim);
 
             var totalIncomes = await _incomeRepository.GetTotalIncomesByUserAsync(userId);
-            var totalExpenses = await _incomeRepository.GetTotalExpensesByUserAsync(userId); // Obtener total de gastos
+            var totalExpenses = await _incomeRepository.GetTotalExpensesByUserAsync(userId); 
             var weeklyIncomes = await _incomeRepository.GetWeeklyIncomesByUserAsync(userId);
             var monthlyIncomes = await _incomeRepository.GetMonthlyIncomesByUserAsync(userId);
             var yearlyIncomes = await _incomeRepository.GetYearlyIncomesByUserAsync(userId);
-            var balance = totalIncomes - totalExpenses; // Calcular balance
+            var balance = totalIncomes - totalExpenses;
 
             var summary = new IncomeSummaryDto
             {
                 TotalIncomes = totalIncomes,
-                TotalExpenses = totalExpenses, // Asignar total de gastos
+                TotalExpenses = totalExpenses, 
                 WeeklyIncomes = weeklyIncomes.Sum(i => i.Amount),
                 MonthlyIncomes = monthlyIncomes.Sum(i => i.Amount),
                 YearlyIncomes = yearlyIncomes.Sum(i => i.Amount),
-                Balance = balance // Asignar balance
+                Balance = balance 
             };
 
             return Ok(summary);

@@ -5,9 +5,10 @@ import { catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
 
 @Component({
-  selector: 'app-incomes',
-  templateUrl: './incomes.component.html',
-  styleUrls: ['./incomes.component.css']
+    selector: 'app-incomes',
+    templateUrl: './incomes.component.html',
+    styleUrls: ['./incomes.component.css'],
+    standalone: false
 })
 export class IncomesComponent implements OnInit {
   incomes: any[] = [];
@@ -26,7 +27,7 @@ export class IncomesComponent implements OnInit {
     this.loadIncomeSummary();
   }
 
-  // Cargar ingresos
+ 
   loadIncomes(): void {
     this.isLoading = true;
     this.incomeService.getIncomes()
@@ -46,7 +47,7 @@ export class IncomesComponent implements OnInit {
       });
   }
 
-  // Cargar resumen de ingresos
+ 
   loadIncomeSummary(): void {
     this.isLoading = true;
     this.incomeService.getIncomeSummary()
@@ -66,7 +67,7 @@ export class IncomesComponent implements OnInit {
       });
   }
 
-  // Agregar un ingreso
+  
   addIncome(): void {
     if (!this.newIncome.description || !this.newIncome.amount || !this.newIncome.date) {
       this.toastr.error('Todos los campos son obligatorios.', 'Error');
@@ -84,7 +85,7 @@ export class IncomesComponent implements OnInit {
       .subscribe({
         next: () => {
           this.toastr.success('Ingreso agregado con éxito.', 'Éxito');
-          this.newIncome = { description: '', amount: 0, date: '' }; // Limpiar formulario
+          this.newIncome = { description: '', amount: 0, date: '' }; 
           this.loadIncomes();
           this.loadIncomeSummary();
         },
@@ -94,7 +95,7 @@ export class IncomesComponent implements OnInit {
       });
   }
 
-  // Eliminar un ingreso
+ 
   deleteIncome(id: number): void {
     if (confirm('¿Estás seguro de que deseas eliminar este ingreso?')) {
       this.isLoading = true;
@@ -118,7 +119,6 @@ export class IncomesComponent implements OnInit {
     }
   }
 
-  // Manejo de errores HTTP
   private handleHttpError(error: any): void {
     if (error.status === 400) {
       this.toastr.error('Datos inválidos.', 'Error');

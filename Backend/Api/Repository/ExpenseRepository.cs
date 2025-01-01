@@ -18,7 +18,7 @@ namespace Api.Repository
         {
             return await _context.Expenses
                 .Where(e => e.UserId == userId)
-                .Include(e => e.Category) // Opcional: incluye la categoría asociada
+                .Include(e => e.Category)
                 .ToListAsync();
         }
 
@@ -35,27 +35,11 @@ namespace Api.Repository
                 .SumAsync(e => e.Amount);
         }
 
-        public async Task<IEnumerable<Expense>> GetWeeklyExpensesByUserAsync(int userId)
+        public async Task<IEnumerable<Expense>> GetExpensesByUserAndDateRangeAsync(int userId, DateTime startDate, DateTime endDate)
         {
-            var startDate = DateTime.Now.AddDays(-7);
             return await _context.Expenses
-                .Where(e => e.UserId == userId && e.Date >= startDate)
-                .ToListAsync();
-        }
-
-        public async Task<IEnumerable<Expense>> GetMonthlyExpensesByUserAsync(int userId)
-        {
-            var startDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
-            return await _context.Expenses
-                .Where(e => e.UserId == userId && e.Date >= startDate)
-                .ToListAsync();
-        }
-
-        public async Task<IEnumerable<Expense>> GetYearlyExpensesByUserAsync(int userId)
-        {
-            var startDate = new DateTime(DateTime.Now.Year, 1, 1);
-            return await _context.Expenses
-                .Where(e => e.UserId == userId && e.Date >= startDate)
+                .Where(e => e.UserId == userId && e.Date >= startDate && e.Date <= endDate)
+                .Include(e => e.Category) 
                 .ToListAsync();
         }
 
@@ -63,6 +47,7 @@ namespace Api.Repository
         {
             return await _context.Expenses
                 .Where(e => e.UserId == userId)
+                .Include(e => e.Category)
                 .GroupBy(e => e.Category.Name)
                 .Select(group => new ExpenseByCategoryDto
                 {
@@ -72,15 +57,37 @@ namespace Api.Repository
                 .ToListAsync();
         }
 
-
         public async Task DeleteExpenseAsync(int id, int userId)
         {
-            var expense = await _context.Expenses.FirstOrDefaultAsync(e => e.Id == id && e.UserId == userId);
+            var expense = await _context.Expenses
+                .Include(e => e.Category)
+                .FirstOrDefaultAsync(e => e.Id == id && e.UserId == userId);
+
             if (expense != null)
             {
                 _context.Expenses.Remove(expense);
                 await _context.SaveChangesAsync();
             }
+        }
+
+        public async Task UpdateExpenseAsync(Expense expense)
+        {
+            var existingExpense = await _context.Expenses
+                .Include(e => e.Category)
+                .FirstOrDefaultAsync(e => e.Id == expense.Id && e.UserId == expense.UserId);
+
+            if (existingExpense == null)
+            {
+                throw new KeyNotFoundException("El gasto no existe o no pertenece al usuario.");
+            }
+
+            existingExpense.Amount = expense.Amount;
+            existingExpense.Description = expense.Description;
+            existingExpense.CategoryId = expense.CategoryId;
+            existingExpense.Date = expense.Date;
+
+            _context.Expenses.Update(existingExpense);
+            await _context.SaveChangesAsync();
         }
     }
 }

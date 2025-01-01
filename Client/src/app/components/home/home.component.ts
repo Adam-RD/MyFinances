@@ -5,9 +5,10 @@ import { ToastrService } from 'ngx-toastr';
 import { IncomeService } from '../../services/income.service';
 
 @Component({
-  selector: 'app-home',
-  templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css'],
+    selector: 'app-home',
+    templateUrl: './home.component.html',
+    styleUrls: ['./home.component.css'],
+    standalone: false
 })
 export class HomeComponent implements OnInit {
   currentPage: number = 1;
@@ -17,7 +18,7 @@ export class HomeComponent implements OnInit {
   incomes: any[] = [];
   summary: any = { totalExpenses: 0, weeklyExpenses: 0, monthlyExpenses: 0, yearlyExpenses: 0 };
   incomeSummary: any = { totalIncomes: 0, totalExpenses: 0, balance: 0 };
-  totalBalance: number = 0; // Balance total
+  totalBalance: number = 0; 
   isLoading = false;
   newCategory = '';
   newExpense: any = { description: '', amount: 0, date: '', categoryId: 0 };
@@ -43,7 +44,7 @@ export class HomeComponent implements OnInit {
       this.calculateBalance();
     } catch (error) {
       this.toastr.error('Error al cargar los datos. Reintentando...', 'Error');
-      setTimeout(() => this.initializeData(), 3000); // Reintentar después de 3 segundos
+      setTimeout(() => this.initializeData(), 3000); 
     } finally {
       this.isLoading = false;
     }
@@ -75,13 +76,36 @@ export class HomeComponent implements OnInit {
   async loadSummary(): Promise<void> {
     try {
       const data = await this.expenseService.getSummary().toPromise();
-      this.summary = data || { totalExpenses: 0, weeklyExpenses: 0, monthlyExpenses: 0, yearlyExpenses: 0 };
+      if (data && this.categories.length > 0) {
+        // Mapea los datos para incluir nombres de categorías
+        this.summary = {
+          ...data,
+          expensesByCategory: this.categories.map((category) => {
+            const categoryExpense = data.expensesByCategory.find(
+              (item: any) => item.categoryId === category.id
+            );
+            return {
+              categoryName: category.name,
+              totalAmount: categoryExpense ? categoryExpense.totalAmount : 0,
+            };
+          }),
+        };
+      } else {
+        this.summary = {
+          totalExpenses: 0,
+          weeklyExpenses: 0,
+          monthlyExpenses: 0,
+          yearlyExpenses: 0,
+          expensesByCategory: [],
+        };
+      }
     } catch (error) {
       this.toastr.error('Error al cargar el resumen', 'Error');
       this.summary = { totalExpenses: 0, weeklyExpenses: 0, monthlyExpenses: 0, yearlyExpenses: 0 };
       throw error;
     }
   }
+  
 
   async loadIncomes(): Promise<void> {
     try {

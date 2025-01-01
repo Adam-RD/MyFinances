@@ -1,103 +1,106 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { GraphsService } from '../../services/graphs.service';
-import { Chart, ChartConfiguration } from 'chart.js/auto';
+import { ScaleType } from '@swimlane/ngx-charts';
 
 @Component({
   selector: 'app-graphs',
   templateUrl: './graphs.component.html',
   styleUrls: ['./graphs.component.css'],
+  standalone: false,
 })
 export class GraphsComponent implements OnInit {
-  private summary: any = { expensesByCategory: [] };
-  private charts: { [key: string]: Chart } = {};
+  summary: any = {
+    weeklyExpensesByCategory: [],
+    monthlyExpensesByCategory: [],
+    yearlyExpensesByCategory: [],
+    expensesByCategory: [],
+  };
+  chartData: { name: string; value: number }[] = [];
+  selectedChart: string = 'weekly';
+  isLoading: boolean = false;
 
-  constructor(private graphsService: GraphsService) {}
+  colorScheme: { name: string; selectable: boolean; group: ScaleType; domain: string[] } = {
+    name: 'dynamic',
+    selectable: true,
+    group: ScaleType.Ordinal,
+    domain: [],
+  };
+
+  constructor(private graphsService: GraphsService, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.loadSummaryData();
   }
 
   loadSummaryData(): void {
+    this.isLoading = true;
     this.graphsService.getExpenseSummary().subscribe({
       next: (data) => {
         this.summary = data;
-        this.renderAllCharts();
+        this.updateChartData();
+        this.generateDynamicColors();
+        this.isLoading = false;
       },
       error: (err) => {
-        console.error('Error fetching summary data:', err);
-        alert('No se pudieron obtener los datos del servidor.');
+        console.error('Error al cargar los datos:', err);
+        this.handleError(err);
+        this.isLoading = false;
       },
     });
   }
 
-  renderAllCharts(): void {
-    this.renderChart(
-      'weeklyChart',
-      this.calculateProportionalData(this.summary.weeklyExpenses),
-      'Semanal'
-    );
-    this.renderChart(
-      'monthlyChart',
-      this.calculateProportionalData(this.summary.monthlyExpenses),
-      'Mensual'
-    );
-    this.renderChart(
-      'yearlyChart',
-      this.calculateProportionalData(this.summary.yearlyExpenses),
-      'Anual'
-    );
-    this.renderChart('totalChart', this.summary.expensesByCategory, 'Total');
-  }
-
-  renderChart(chartId: string, data: any[], label: string): void {
-    const canvas = document.getElementById(chartId) as HTMLCanvasElement;
-    if (!canvas) return;
-
-    // Destruye el gráfico existente si ya fue creado
-    if (this.charts[chartId]) {
-      this.charts[chartId].destroy();
-    }
-
-    // Configuración del gráfico
-    const chartConfig: ChartConfiguration<'doughnut'> = {
-      type: 'doughnut',
-      data: {
-        labels: data.map((item) => item.categoryName),
-        datasets: [
-          {
-            data: data.map((item) => item.totalAmount),
-            backgroundColor: [
-              '#FF6384',
-              '#36A2EB',
-              '#FFCE56',
-              '#4BC0C0',
-              '#9966FF',
-              '#FF9F40',
-            ],
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          title: {
-            display: true,
-            text: `Gráfico de Gastos (${label})`,
-          },
-        },
-      },
+  updateChartData(): void {
+    const dataMapping: Record<string, { categoryName: string; totalAmount: number }[]> = {
+      weekly: this.summary.weeklyExpensesByCategory,
+      monthly: this.summary.monthlyExpensesByCategory,
+      yearly: this.summary.yearlyExpensesByCategory,
+      total: this.summary.expensesByCategory,
     };
 
-    // Crear el gráfico con configuración válida
-  // this.charts[chartId] = new Chart(canvas, chartConfig);
+    if (dataMapping[this.selectedChart]) {
+      this.chartData = dataMapping[this.selectedChart].map((item) => ({
+        name: item.categoryName,
+        value: item.totalAmount,
+      }));
+    } else {
+      console.error('selectedChart no es válido.');
+      this.chartData = [];
+    }
   }
 
-  calculateProportionalData(totalExpenseForRange: number): any[] {
-    return this.summary.expensesByCategory.map((item: any) => ({
-      categoryName: item.categoryName,
-      totalAmount:
-        item.totalAmount * (totalExpenseForRange / this.summary.totalExpenses),
-    }));
+  generateDynamicColors(): void {
+    const baseColors = ['#FF5733', '#33FF57', '#3357FF', '#FF33A1', '#33FFA5'];
+    this.colorScheme.domain = this.chartData.map((_, index) => baseColors[index % baseColors.length]);
+  }
+
+  onChartSelectionChange(): void {
+    this.isLoading = true;
+    setTimeout(() => {
+      this.updateChartData();
+      this.generateDynamicColors();
+      this.isLoading = false;
+      this.cdr.detectChanges();
+    }, 500);
+  }
+
+  getChartTitle(): string {
+    switch (this.selectedChart) {
+      case 'weekly':
+        return 'Gastos de esta semana';
+      case 'monthly':
+        return 'Gastos de este mes';
+      case 'yearly':
+        return 'Gastos del año';
+      case 'total':
+        return 'Gastos Totales';
+      default:
+        return 'Gráfico';
+    }
+  }
+
+  handleError(error: any): void {
+    const errorMessage =
+      error?.message || 'No se pudieron obtener los datos del servidor. Por favor, intenta nuevamente.';
+    console.error(errorMessage);
   }
 }

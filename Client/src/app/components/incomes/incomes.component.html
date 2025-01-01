@@ -25,13 +25,13 @@
         </li>
       </ul>
       <ul class="navbar-nav ms-auto align-items-center">
-        <!-- Balance -->
+       
         <li class="nav-item me-3">
           <span class="nav-link balance">
             Balance: {{ incomeSummary.balance | currency }}
           </span>
         </li>
-        <!-- Logout -->
+        
         <li class="nav-item">
           <a class="nav-link text-danger fw-semibold" routerLink="/login">Logout</a>
         </li>
@@ -42,9 +42,8 @@
 
 
 <div class="container mt-5">
-  <h2 class="text-primary mb-4">Gestión de Ingresos</h2>
-
-  <!-- Spinner -->
+ 
+ 
   <div *ngIf="isLoading" class="d-flex justify-content-center align-items-center vh-100">
     <div class="spinner-border text-primary" role="status">
       <span class="visually-hidden">Cargando...</span>
@@ -52,15 +51,15 @@
   </div>
 
   <div *ngIf="!isLoading">
-    <!-- Primera fila: Formulario y Lista de Ingresos -->
+    
     <div class="row">
-      <!-- Formulario para Agregar Ingresos -->
+    
       <div class="col-md-6">
         <div class="card mb-4">
           <div class="card-header bg-primary text-white">Agregar Ingreso</div>
           <div class="card-body">
             <form (ngSubmit)="addIncome()" #incomeForm="ngForm" class="shadow-sm p-4 border rounded">
-              <!-- Campo Descripción -->
+             
               <div class="mb-3">
                 <label for="description" class="form-label">Descripción</label>
                 <input
@@ -78,7 +77,7 @@
                 </div>
               </div>
 
-              <!-- Campo Monto -->
+              
               <div class="mb-3">
                 <label for="amount" class="form-label">Monto</label>
                 <input
@@ -97,7 +96,7 @@
                 </div>
               </div>
 
-              <!-- Campo Fecha -->
+             
               <div class="mb-3">
                 <label for="date" class="form-label">Fecha</label>
                 <input
@@ -114,7 +113,7 @@
                 </div>
               </div>
 
-              <!-- Botón Agregar -->
+              
               <button type="submit" class="btn btn-success w-100" [disabled]="incomeForm.invalid">
                 Agregar Ingreso
               </button>
@@ -123,7 +122,7 @@
         </div>
       </div>
 
-      <!-- Lista de Ingresos -->
+      
       <div class="col-md-6">
         <div class="card">
           <div class="card-header bg-success text-white">Lista de Ingresos</div>
@@ -168,9 +167,9 @@
       </div>
     </div>
 
-    <!-- Segunda fila: Resumen de Ingresos y Balance -->
+    
     <div class="row">
-      <!-- Tabla de Resumen de Ingresos -->
+     
       <div class="col-md-6">
         <div class="card mb-4">
           <div class="card-header bg-info text-white">Resumen de Ingresos</div>
@@ -179,9 +178,9 @@
               <thead>
                 <tr>
                   <th>Total Ingresos</th>
-                  <th>Ingresos Semanales</th>
-                  <th>Ingresos Mensuales</th>
-                  <th>Ingresos Anuales</th>
+                  <th>Ingresos de los ultimos 7 dias</th>
+                  <th>Ingresos del mes actual</th>
+                  <th>Ingresos del año actual</th>
                 </tr>
               </thead>
               <tbody>
@@ -197,7 +196,7 @@
         </div>
       </div>
 
-      <!-- Tabla de Balance -->
+    
       <div class="col-md-6">
         <div class="card mb-4">
           <div class="card-header bg-primary text-white">Balance</div>

@@ -5,9 +5,10 @@ import { ToastrService } from 'ngx-toastr'; // Importación de ToastrService
 import { LoginRequest } from '../../Models/LoginRequest';
 
 @Component({
-  selector: 'app-login',
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css'],
+    selector: 'app-login',
+    templateUrl: './login.component.html',
+    styleUrls: ['./login.component.css'],
+    standalone: false
 })
 export class LoginComponent {
   loginData: LoginRequest = { username: '', password: '' };

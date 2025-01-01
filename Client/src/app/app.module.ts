@@ -14,6 +14,7 @@ import { NgChartsModule } from 'ng2-charts';
 import { GraphsComponent } from './components/graphs/graphs.component';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { IncomesComponent } from './components/incomes/incomes.component';
+import { NgxChartsModule } from '@swimlane/ngx-charts';
 
 @NgModule({ declarations: [
         AppComponent,
@@ -25,13 +26,14 @@ import { IncomesComponent } from './components/incomes/incomes.component';
     ],
     bootstrap: [AppComponent], imports: [NgChartsModule,
         NgxPaginationModule,
+        NgxChartsModule,
         BrowserModule,
         AppRoutingModule,
         FormsModule,
-        BrowserAnimationsModule, // Necesario para Toastr
+        BrowserAnimationsModule,
         ToastrModule.forRoot({
-            timeOut: 3000, // Duración de la alerta
-            positionClass: 'toast-bottom-right', // Posición de las alertas
-            preventDuplicates: true // Evitar alertas duplicadas
+            timeOut: 3000,
+            positionClass: 'toast-bottom-right',
+            preventDuplicates: true
         })], providers: [provideHttpClient(withInterceptorsFromDi())] })
 export class AppModule { }

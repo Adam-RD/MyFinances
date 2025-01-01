@@ -1,16 +1,17 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
 })
 export class GraphsService {
-  private apiUrl = 'https://localhost:7096/api/Expenses';
+  private apiUrl = 'https://localhost:7096/api/expenses'; 
 
   constructor(private http: HttpClient) {}
 
-
+  
   private getAuthHeaders(): HttpHeaders {
     const token = localStorage.getItem('token');
     return new HttpHeaders({
@@ -18,30 +19,40 @@ export class GraphsService {
     });
   }
 
+  
+  private handleError(error: any): Observable<never> {
+    console.error('Error en la solicitud HTTP:', error);
+    return throwError(() => new Error(error.message || 'Error en el servidor.'));
+  }
 
+ 
   getExpenseSummary(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/summary`, {
-      headers: this.getAuthHeaders(),
-    });
-  }
-
-  getAllExpenses(): Observable<any> {
-    return this.http.get(`${this.apiUrl}`, {
-      headers: this.getAuthHeaders(),
-    });
+    return this.http
+      .get(`${this.apiUrl}/summary`, { headers: this.getAuthHeaders() })
+      .pipe(catchError(this.handleError));
   }
 
 
-  addExpense(expense: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}`, expense, {
-      headers: this.getAuthHeaders(),
-    });
+
+  getExpensesByCategory(): Observable<any> {
+    return this.http
+      .get(`${this.apiUrl}/categories-summary`, { headers: this.getAuthHeaders() })
+      .pipe(catchError(this.handleError));
   }
 
+ 
+  getExpensesByDateRange(startDate: string, endDate: string): Observable<any> {
+    return this.http
+      .get(`${this.apiUrl}/range?startDate=${startDate}&endDate=${endDate}`, {
+        headers: this.getAuthHeaders(),
+      })
+      .pipe(catchError(this.handleError));
+  }
 
-  deleteExpense(id: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${id}`, {
-      headers: this.getAuthHeaders(),
-    });
+  
+  getCategoryGraphs(): Observable<any> {
+    return this.http
+      .get(`${this.apiUrl}/categories-graphs`, { headers: this.getAuthHeaders() })
+      .pipe(catchError(this.handleError));
   }
 }
