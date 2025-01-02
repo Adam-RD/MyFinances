@@ -10,8 +10,10 @@ namespace Api.Interfaces
         Task<IEnumerable<Income>> GetMonthlyIncomesByUserAsync(int userId);
         Task<IEnumerable<Income>> GetYearlyIncomesByUserAsync(int userId);
         Task AddIncomeAsync(Income income);
-        Task DeleteIncomeAsync(int incomeId, int userId);
+        Task UpdateIncomeAsync(Income income);
+        Task<Income?> GetIncomeByIdAsync(int userId, int incomeId);
 
+        Task DeleteIncomeAsync(int incomeId, int userId);
         Task<decimal> GetBalanceByUserAsync(int userId);
         Task<decimal> GetTotalExpensesByUserAsync(int userId);
 

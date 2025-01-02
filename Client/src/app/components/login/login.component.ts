@@ -12,13 +12,13 @@ import { LoginRequest } from '../../Models/LoginRequest';
 })
 export class LoginComponent {
   loginData: LoginRequest = { username: '', password: '' };
-  isLoading = false; // Estado de carga
-  showPassword = false; // Control de visibilidad de la contraseña
+  isLoading = false; 
+  showPassword = false; 
 
   constructor(
     private authService: AuthService,
     private router: Router,
-    private toastr: ToastrService // Inyección de ToastrService
+    private toastr: ToastrService 
   ) {}
 
   togglePasswordVisibility() {
@@ -26,12 +26,12 @@ export class LoginComponent {
   }
 
   async onSubmit() {
-    this.isLoading = true; // Inicia el indicador de carga
+    this.isLoading = true; 
     try {
       const response = await this.authService.login(this.loginData).toPromise();
       if (response && response.token) {
         this.authService.saveToken(response.token);
-        this.toastr.success('Inicio de sesión exitoso.', 'Éxito'); // Notificación de éxito
+        this.toastr.success('Inicio de sesión exitoso.', 'Éxito'); 
         this.router.navigate(['/home']); // Redirige al usuario
       } else {
         throw new Error('Token no recibido');

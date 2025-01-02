@@ -55,6 +55,34 @@ namespace Api.Controllers
             return CreatedAtAction(nameof(GetCategories), new { id = category.Id }, category);
         }
 
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateCategory(int id, [FromBody] CategoryCreateDto categoryDto)
+        {
+            var userIdClaim = User.FindFirst("userId")?.Value;
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                return Unauthorized("UserId is missing in the token.");
+            }
+
+            var userId = int.Parse(userIdClaim);
+
+            var categoryToUpdate = new Category
+            {
+                Id = id,
+                Name = categoryDto.Name,
+                UserId = userId
+            };
+
+            var existingCategory = await _repository.GetCategoryByIdAsync(id, userId);
+            if (existingCategory == null)
+            {
+                return NotFound("Category not found.");
+            }
+
+            await _repository.UpdateCategoryAsync(categoryToUpdate, userId);
+            return NoContent();
+        }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCategory(int id)
         {
@@ -81,6 +109,5 @@ namespace Api.Controllers
             await _repository.DeleteCategoryAsync(id, userId);
             return NoContent();
         }
-
     }
 }

@@ -113,6 +113,34 @@ namespace Api.Controllers
             return NoContent();
         }
 
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateIncome(int id, [FromBody] IncomeCreateDto incomeDto)
+        {
+            var userIdClaim = User.FindFirst("userId")?.Value;
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                return Unauthorized("UserId is missing in the token.");
+            }
+
+            var userId = int.Parse(userIdClaim);
+
+            var existingIncome = await _incomeRepository.GetIncomeByIdAsync(userId, id);
+            if (existingIncome == null)
+            {
+                return NotFound("Income not found or does not belong to the user.");
+            }
+
+           
+            existingIncome.Description = incomeDto.Description;
+            existingIncome.Amount = incomeDto.Amount;
+            existingIncome.Date = incomeDto.Date;
+
+            await _incomeRepository.UpdateIncomeAsync(existingIncome);
+
+            return NoContent();
+        }
+
+
         [HttpGet("balance")]
         public async Task<IActionResult> GetBalance()
         {

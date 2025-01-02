@@ -25,13 +25,11 @@
         </li>
       </ul>
       <ul class="navbar-nav ms-auto align-items-center">
-       
         <li class="nav-item me-3">
           <span class="nav-link balance">
             Balance: {{ incomeSummary.balance | currency }}
           </span>
         </li>
-        
         <li class="nav-item">
           <a class="nav-link text-danger fw-semibold" routerLink="/login">Logout</a>
         </li>
@@ -40,10 +38,7 @@
   </div>
 </nav>
 
-
 <div class="container mt-5">
- 
- 
   <div *ngIf="isLoading" class="d-flex justify-content-center align-items-center vh-100">
     <div class="spinner-border text-primary" role="status">
       <span class="visually-hidden">Cargando...</span>
@@ -51,15 +46,12 @@
   </div>
 
   <div *ngIf="!isLoading">
-    
     <div class="row">
-    
       <div class="col-md-6">
         <div class="card mb-4">
           <div class="card-header bg-primary text-white">Agregar Ingreso</div>
           <div class="card-body">
             <form (ngSubmit)="addIncome()" #incomeForm="ngForm" class="shadow-sm p-4 border rounded">
-             
               <div class="mb-3">
                 <label for="description" class="form-label">Descripción</label>
                 <input
@@ -77,7 +69,6 @@
                 </div>
               </div>
 
-              
               <div class="mb-3">
                 <label for="amount" class="form-label">Monto</label>
                 <input
@@ -96,7 +87,6 @@
                 </div>
               </div>
 
-             
               <div class="mb-3">
                 <label for="date" class="form-label">Fecha</label>
                 <input
@@ -113,7 +103,6 @@
                 </div>
               </div>
 
-              
               <button type="submit" class="btn btn-success w-100" [disabled]="incomeForm.invalid">
                 Agregar Ingreso
               </button>
@@ -122,7 +111,6 @@
         </div>
       </div>
 
-      
       <div class="col-md-6">
         <div class="card">
           <div class="card-header bg-success text-white">Lista de Ingresos</div>
@@ -139,37 +127,36 @@
               </thead>
               <tbody>
                 <tr *ngFor="let income of incomes | paginate: { itemsPerPage: 4, currentPage: currentPage }; let i = index">
-                  <td>{{ i + 1 + (currentPage - 1) * 5 }}</td>
+                  <td>{{ i + 1 + (currentPage - 1) * 4 }}</td>
                   <td>{{ income.description }}</td>
                   <td>{{ income.amount | currency }}</td>
                   <td>{{ income.date | date }}</td>
-                  <td>
-                    <button class="btn btn-danger btn-sm" (click)="deleteIncome(income.id)">
-                      Eliminar
-                    </button>
+                  <td class="text-center">
+                    <div class="btn-group">
+                      <button class="btn btn-primary btn-sm" (click)="openEditModal(income)">Editar</button>
+                      <button class="btn btn-danger btn-sm" (click)="openDeleteModal(income.id)">Eliminar</button>
+                    </div>
                   </td>
+                  
                 </tr>
               </tbody>
             </table>
 
             <pagination-controls
-            (pageChange)="currentPage = $event"
-            [previousLabel]="'Anterior'"
-            [nextLabel]="'Siguiente'"
-            [maxSize]="4"
-            [directionLinks]="true"
-            [autoHide]="true"
-            class="d-flex justify-content-center mt-3"
-          ></pagination-controls>
-
+              (pageChange)="currentPage = $event"
+              [previousLabel]="'Anterior'"
+              [nextLabel]="'Siguiente'"
+              [maxSize]="4"
+              [directionLinks]="true"
+              [autoHide]="true"
+              class="d-flex justify-content-center mt-3"
+            ></pagination-controls>
           </div>
         </div>
       </div>
     </div>
 
-    
     <div class="row">
-     
       <div class="col-md-6">
         <div class="card mb-4">
           <div class="card-header bg-info text-white">Resumen de Ingresos</div>
@@ -178,7 +165,7 @@
               <thead>
                 <tr>
                   <th>Total Ingresos</th>
-                  <th>Ingresos de los ultimos 7 dias</th>
+                  <th>Ingresos de los últimos 7 días</th>
                   <th>Ingresos del mes actual</th>
                   <th>Ingresos del año actual</th>
                 </tr>
@@ -196,7 +183,6 @@
         </div>
       </div>
 
-    
       <div class="col-md-6">
         <div class="card mb-4">
           <div class="card-header bg-primary text-white">Balance</div>
@@ -219,6 +205,114 @@
             </table>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Confirmación -->
+<div
+  class="modal"
+  tabindex="-1"
+  role="dialog"
+  [ngClass]="{ show: showDeleteModal }"
+  style="display: block;"
+  *ngIf="showDeleteModal"
+>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title text-danger">Confirmar Eliminación</h5>
+        <button type="button" class="btn-close" (click)="closeDeleteModal()"></button>
+      </div>
+      <div class="modal-body">
+        ¿Estás seguro de que deseas eliminar este ingreso? Esta acción no se puede deshacer.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeDeleteModal()">Cancelar</button>
+        <button type="button" class="btn btn-danger" (click)="confirmDelete()">Eliminar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Edición -->
+<div
+  class="modal"
+  tabindex="-1"
+  role="dialog"
+  [ngClass]="{ show: showEditModal }"
+  style="display: block;"
+  *ngIf="showEditModal"
+>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Editar Ingreso</h5>
+        <button type="button" class="btn-close" (click)="closeEditModal()"></button>
+      </div>
+      <div class="modal-body">
+        <form #editIncomeForm="ngForm">
+          <div class="mb-3">
+            <label for="editDescription" class="form-label">Descripción</label>
+            <input
+              type="text"
+              id="editDescription"
+              class="form-control"
+              [(ngModel)]="incomeToEdit.description"
+              name="description"
+              #editDescription="ngModel"
+              required
+            />
+            <div *ngIf="editDescription.invalid && editDescription.touched" class="text-danger">
+              La descripción es requerida.
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="editAmount" class="form-label">Monto</label>
+            <input
+              type="number"
+              id="editAmount"
+              class="form-control"
+              [(ngModel)]="incomeToEdit.amount"
+              name="amount"
+              #editAmount="ngModel"
+              required
+              min="0.01"
+            />
+            <div *ngIf="editAmount.invalid && editAmount.touched" class="text-danger">
+              El monto debe ser mayor a 0.
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="editDate" class="form-label">Fecha</label>
+            <input
+              type="date"
+              id="editDate"
+              class="form-control"
+              [(ngModel)]="incomeToEdit.date"
+              name="date"
+              #editDate="ngModel"
+              required
+            />
+            <div *ngIf="editDate.invalid && editDate.touched" class="text-danger">
+              La fecha es requerida.
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeEditModal()">Cancelar</button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          [disabled]="editIncomeForm.invalid"
+          (click)="confirmEdit()"
+        >
+          Guardar Cambios
+        </button>
       </div>
     </div>
   </div>

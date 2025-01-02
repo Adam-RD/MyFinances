@@ -52,6 +52,7 @@ namespace Api.Repository
             await _context.Incomes.AddAsync(income);
             await _context.SaveChangesAsync();
         }
+               
 
         public async Task UpdateIncomeAsync(Income income)
         {
@@ -100,6 +101,8 @@ namespace Api.Repository
                 .OrderByDescending(i => i.Date)
                 .ToListAsync();
         }
+
+
 
         public async Task<IEnumerable<Income>> GetYearlyIncomesByUserAsync(int userId)
         {

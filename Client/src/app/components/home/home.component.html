@@ -25,13 +25,11 @@
         </li>
       </ul>
       <ul class="navbar-nav ms-auto align-items-center">
-        <!-- Balance -->
         <li class="nav-item me-3">
           <span class="nav-link balance">
             Balance: {{ totalBalance | currency }}
           </span>
         </li>
-        <!-- Logout -->
         <li class="nav-item">
           <a class="nav-link text-danger fw-semibold" routerLink="/login">Logout</a>
         </li>
@@ -40,13 +38,8 @@
   </div>
 </nav>
 
-
-
-
 <div class="container mt-5" *ngIf="!isLoading; else loading">
-  <!-- Contenido principal: Formularios, Listas, Tablas -->
   <div class="row">
-    <!-- Formulario para agregar gastos -->
     <div class="col-md-6">
       <h2 class="mb-4 text-primary">Agregar Gastos</h2>
       <form (ngSubmit)="addExpense()" class="shadow-sm p-4 border rounded" #expenseForm="ngForm">
@@ -75,7 +68,6 @@
           />
           <div *ngIf="amount.invalid && amount.touched" class="text-danger">Monto válido es requerido.</div>
         </div>
-
         <div class="mb-3">
           <input
             type="date"
@@ -88,7 +80,6 @@
           />
           <div *ngIf="date.invalid && date.touched" class="text-danger">Fecha es requerida y no puede ser futura.</div>
         </div>
-
         <div class="mb-3">
           <select
             class="form-select"
@@ -106,116 +97,258 @@
       </form>
     </div>
 
-    <!-- Categorías -->
     <div class="col-md-6">
-      <h2 class="mb-4 text-primary">Categorías</h2>
-      <ul class="list-group mb-4 shadow-sm">
-        <li
-          class="list-group-item d-flex justify-content-between align-items-center"
-          *ngFor="let category of categories | paginate: { itemsPerPage: 4, currentPage: categoriesPage }; let i = index"
-        >
-          <span class="fw-bold">{{ category.name }}</span>
-          <button class="btn btn-danger btn-sm" (click)="deleteCategory(category.id)">Eliminar</button>
-        </li>
-      </ul>
-      <pagination-controls
-        (pageChange)="categoriesPage = $event"
-        previousLabel="Anterior"
-        nextLabel="Siguiente"
-        class="d-flex justify-content-center mt-3"
-      ></pagination-controls>
-      <div class="input-group">
-        <input
-          type="text"
-          class="form-control"
-          placeholder="Nueva Categoría"
-          [(ngModel)]="newCategory"
-          name="newCategory"
-          #newCategoryInput="ngModel"
-          required
-        />
-        <button class="btn btn-primary" (click)="addCategory()" [disabled]="newCategoryInput.invalid">Agregar</button>
+      <h2 class="mb-4 text-primary">
+        Categorías</h2>
+        <ul class="list-group mb-4 shadow-sm">
+          <li
+            class="list-group-item d-flex justify-content-between align-items-center"
+            *ngFor="let category of categories | paginate: { itemsPerPage: 4, currentPage: categoriesPage }; let i = index"
+          >
+            <span class="fw-bold">{{ category.name }}</span>
+            <div>
+              <button class="btn btn-warning btn-sm me-2" (click)="openEditCategoryModal(category)">Editar</button>
+              <button class="btn btn-danger btn-sm" (click)="openDeleteModal(category.id, 'category')">Eliminar</button>
+            </div>
+          </li>
+        </ul>
+        <pagination-controls
+          (pageChange)="categoriesPage = $event"
+          previousLabel="Anterior"
+          nextLabel="Siguiente"
+          class="d-flex justify-content-center mt-3"
+        ></pagination-controls>
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Nueva Categoría"
+            [(ngModel)]="newCategory"
+            name="newCategory"
+            #newCategoryInput="ngModel"
+            required
+          />
+          <button class="btn btn-primary" (click)="addCategory()" [disabled]="newCategoryInput.invalid">Agregar</button>
+        </div>
+        <div *ngIf="newCategoryInput.invalid && newCategoryInput.touched" class="text-danger mt-2">El nombre de la categoría es requerido.</div>
       </div>
-      <div *ngIf="newCategoryInput.invalid && newCategoryInput.touched" class="text-danger mt-2">El nombre de la categoría es requerido.</div>
     </div>
-  </div>
 
-  
-  <div class="row mt-5">
-   
-    <div class="col-md-6">
-      <h2 class="mb-4 text-primary">Resumen de Gastos</h2>
-      <div class="card shadow-sm border-0">
-        <table class="table table-bordered text-center table-hover shadow-sm">
-          <thead class="table-gradient">
+    <div class="row mt-5">
+      <div class="col-md-6">
+        <h2 class="mb-4 text-primary">Resumen de Gastos</h2>
+        <div class="card shadow-sm border-0">
+          <table class="table table-bordered text-center table-hover shadow-sm">
+            <thead class="table-gradient">
+              <tr>
+                <th>Descripción</th>
+                <th>Monto</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Total:</strong></td>
+                <td class="text-success">{{ summary.totalExpenses | currency }}</td>
+              </tr>
+              <tr>
+                <td><strong>Últimos 7 días:</strong></td>
+                <td class="text-info">{{ summary.weeklyExpenses | currency }}</td>
+              </tr>
+              <tr>
+                <td><strong>Este Mes:</strong></td>
+                <td class="text-warning">{{ summary.monthlyExpenses | currency }}</td>
+              </tr>
+              <tr>
+                <td><strong>Este Año:</strong></td>
+                <td class="text-danger">{{ summary.yearlyExpenses | currency }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <h2 class="mb-4 text-primary">Detalles de Gastos</h2>
+        <table class="table table-striped shadow-sm">
+          <thead class="table-primary">
             <tr>
+              <th>#</th>
               <th>Descripción</th>
               <th>Monto</th>
+              <th>Fecha</th>
+              <th>Categoría</th>
+              <th>Acción</th>
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td><strong>Total:</strong></td>
-              <td class="text-success">{{ summary.totalExpenses | currency }}</td>
-            </tr>
-            <tr>
-              <td><strong>Ultimos 7 dias:</strong></td>
-              <td class="text-info">{{ summary.weeklyExpenses | currency }}</td>
-            </tr>
-            <tr>
-              <td><strong>Este Mes:</strong></td>
-              <td class="text-warning">{{ summary.monthlyExpenses | currency }}</td>
-            </tr>
-            <tr>
-              <td><strong>Este Año:</strong></td>
-              <td class="text-danger">{{ summary.yearlyExpenses | currency }}</td>
+            <tr *ngFor="let expense of expenses | paginate: { itemsPerPage: 5, currentPage: currentPage }; let i = index">
+              <td>{{ i + 1 + (currentPage - 1) * 5 }}</td>
+              <td>{{ expense.description }}</td>
+              <td>{{ expense.amount | currency }}</td>
+              <td>{{ expense.date | date }}</td>
+              <td>{{ expense.categoryName }}</td>
+              <td>
+                <button class="btn btn-warning btn-sm" (click)="openEditModal(expense)">Editar</button>
+                <button class="btn btn-danger btn-sm mt-3" (click)="openDeleteModal(expense.id, 'expense')">Eliminar</button>
+              </td>
             </tr>
           </tbody>
         </table>
-      </div>
-    </div>
 
-    <!-- Detalles de Gastos -->
-    <div class="col-md-6">
-      <h2 class="mb-4 text-primary">Detalles de Gastos</h2>
-      <table class="table table-striped shadow-sm">
-        <thead class="table-primary">
-          <tr>
-            <th>#</th>
-            <th>Descripción</th>
-            <th>Monto</th>
-            <th>Fecha</th>
-            <th>Categoría</th>
-            <th>Acción</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let expense of expenses | paginate: { itemsPerPage: 5, currentPage: currentPage }; let i = index">
-            <td>{{ i + 1 + (currentPage - 1) * 5 }}</td>
-            <td>{{ expense.description }}</td>
-            <td>{{ expense.amount | currency }}</td>
-            <td>{{ expense.date | date }}</td>
-            <td>{{ expense.categoryName }}</td>
-            <td>
-              <button class="btn btn-danger btn-sm" (click)="deleteExpense(expense.id)">Eliminar</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <pagination-controls
-        (pageChange)="currentPage = $event"
-        previousLabel="Anterior"
-        nextLabel="Siguiente"
-        class="d-flex justify-content-center mt-3"
-      ></pagination-controls>
+        <div
+  class="modal"
+  tabindex="-1"
+  role="dialog"
+  [ngClass]="{ show: isEditModalOpen }"
+  style="display: block;"
+  *ngIf="isEditModalOpen"
+>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Editar Gasto</h5>
+        <button type="button" class="btn-close" (click)="closeEditModal()"></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <!-- Campo para la descripción -->
+          <div class="mb-3">
+            <label for="description" class="form-label">Descripción</label>
+            <input
+              type="text"
+              class="form-control"
+              [(ngModel)]="editExpense.description"
+              name="description"
+              required
+            />
+          </div>
+
+          <!-- Campo para el monto -->
+          <div class="mb-3">
+            <label for="amount" class="form-label">Monto</label>
+            <input
+              type="number"
+              class="form-control"
+              [(ngModel)]="editExpense.amount"
+              name="amount"
+              required
+            />
+          </div>
+
+          <!-- Campo para la fecha -->
+          <div class="mb-3">
+            <label for="date" class="form-label">Fecha</label>
+            <input
+              type="date"
+              class="form-control"
+              [(ngModel)]="editExpense.date"
+              name="date"
+              [max]="maxDate"
+              required
+            />
+          </div>
+
+          <!-- Campo para seleccionar categoría -->
+          <div class="mb-3">
+            <label for="categoryId" class="form-label">Categoría</label>
+            <select
+              class="form-select"
+              [(ngModel)]="editExpense.categoryId"
+              name="categoryId"
+              required
+            >
+              <option *ngFor="let category of categories" [value]="category.id">
+                {{ category.name }}
+              </option>
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeEditModal()">Cancelar</button>
+        <button type="button" class="btn btn-primary" (click)="updateExpense()">Guardar Cambios</button>
+      </div>
     </div>
   </div>
 </div>
 
-<ng-template #loading>
-  <div class="d-flex justify-content-center align-items-center vh-100">
-    <div class="spinner-border text-primary" role="status">
-      <span class="visually-hidden">Cargando...</span>
+        <pagination-controls
+          (pageChange)="currentPage = $event"
+          previousLabel="Anterior"
+          nextLabel="Siguiente"
+          class="d-flex justify-content-center mt-3"
+        ></pagination-controls>
+      </div>
     </div>
   </div>
-</ng-template>
+
+
+  <div
+    class="modal"
+    tabindex="-1"
+    role="dialog"
+    [ngClass]="{ show: isEditCategoryModalOpen }"
+    style="display: block;"
+    *ngIf="isEditCategoryModalOpen"
+  >
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Editar Categoría</h5>
+          <button type="button" class="btn-close" (click)="closeEditCategoryModal()"></button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="mb-3">
+              <label for="categoryName" class="form-label">Nombre</label>
+              <input
+                type="text"
+                class="form-control"
+                [(ngModel)]="editCategory.name"
+                name="categoryName"
+                required
+              />
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeEditCategoryModal()">Cancelar</button>
+          <button type="button" class="btn btn-primary" (click)="updateCategory()">Guardar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="modal"
+    tabindex="-1"
+    role="dialog"
+    [ngClass]="{ show: showDeleteModal }"
+    style="display: block;"
+    *ngIf="showDeleteModal"
+  >
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title text-danger">Confirmar Eliminación</h5>
+          <button type="button" class="btn-close" (click)="closeDeleteModal()"></button>
+        </div>
+        <div class="modal-body">
+          ¿Estás seguro de que deseas eliminar este
+          <strong>{{ deleteType === 'expense' ? 'gasto' : 'categoría' }}</strong>? Esta acción no se puede deshacer.
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeDeleteModal()">Cancelar</button>
+          <button type="button" class="btn btn-danger" (click)="confirmDelete()">Eliminar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #loading>
+    <div class="d-flex justify-content-center align-items-center vh-100">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+    </div>
+  </ng-template>

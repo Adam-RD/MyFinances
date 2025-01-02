@@ -46,6 +46,15 @@ namespace Api.Repository
                 .FirstOrDefaultAsync(c => c.Id == categoryId && c.UserId == userId);
         }
 
+        public async Task UpdateCategoryAsync(Category updatedCategory, int userId)
+        {
+            var category = await GetCategoryByIdAsync(updatedCategory.Id, userId);
+            if (category != null)
+            {
+                category.Name = updatedCategory.Name;               
+                _context.Categories.Update(category);
+                await _context.SaveChangesAsync();
+            }
+        }
     }
-
 }

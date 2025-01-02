@@ -5,10 +5,10 @@ import { ToastrService } from 'ngx-toastr';
 import { IncomeService } from '../../services/income.service';
 
 @Component({
-    selector: 'app-home',
-    templateUrl: './home.component.html',
-    styleUrls: ['./home.component.css'],
-    standalone: false
+  selector: 'app-home',
+  templateUrl: './home.component.html',
+  styleUrls: ['./home.component.css'],
+  standalone: false,
 })
 export class HomeComponent implements OnInit {
   currentPage: number = 1;
@@ -16,13 +16,30 @@ export class HomeComponent implements OnInit {
   categories: any[] = [];
   expenses: any[] = [];
   incomes: any[] = [];
-  summary: any = { totalExpenses: 0, weeklyExpenses: 0, monthlyExpenses: 0, yearlyExpenses: 0 };
+  summary: any = {
+    totalExpenses: 0,
+    weeklyExpenses: 0,
+    monthlyExpenses: 0,
+    yearlyExpenses: 0,
+  };
   incomeSummary: any = { totalIncomes: 0, totalExpenses: 0, balance: 0 };
-  totalBalance: number = 0; 
+  totalBalance: number = 0;
   isLoading = false;
   newCategory = '';
   newExpense: any = { description: '', amount: 0, date: '', categoryId: 0 };
   maxDate: string = '';
+
+
+  showDeleteModal: boolean = false;
+  idToDelete: number | null = null;
+  deleteType: 'expense' | 'category' | null = null;
+
+  isEditModalOpen: boolean = false;
+  editExpense: any = { description: '', amount: 0, date: '', categoryId: 0 };
+
+
+  isEditCategoryModalOpen: boolean = false;
+  editCategory: any = { id: 0, name: '' };
 
   constructor(
     private categoryService: CategoryService,
@@ -54,15 +71,11 @@ export class HomeComponent implements OnInit {
       this.calculateBalance();
     } catch (error) {
       this.toastr.error('Error al cargar los datos. Reintentando...', 'Error');
-      setTimeout(() => this.initializeData(), 3000); 
+      setTimeout(() => this.initializeData(), 3000);
     } finally {
       this.isLoading = false;
     }
   }
-
-  // Métodos de carga, cálculo y manipulación permanecen sin cambios.
-
-
 
   async loadCategories(): Promise<void> {
     try {
@@ -91,7 +104,6 @@ export class HomeComponent implements OnInit {
     try {
       const data = await this.expenseService.getSummary().toPromise();
       if (data && this.categories.length > 0) {
-        // Mapea los datos para incluir nombres de categorías
         this.summary = {
           ...data,
           expensesByCategory: this.categories.map((category) => {
@@ -115,11 +127,15 @@ export class HomeComponent implements OnInit {
       }
     } catch (error) {
       this.toastr.error('Error al cargar el resumen', 'Error');
-      this.summary = { totalExpenses: 0, weeklyExpenses: 0, monthlyExpenses: 0, yearlyExpenses: 0 };
+      this.summary = {
+        totalExpenses: 0,
+        weeklyExpenses: 0,
+        monthlyExpenses: 0,
+        yearlyExpenses: 0,
+      };
       throw error;
     }
   }
-  
 
   async loadIncomes(): Promise<void> {
     try {
@@ -142,6 +158,70 @@ export class HomeComponent implements OnInit {
     this.incomeSummary.balance = this.totalBalance;
   }
 
+  async addExpense() {
+    this.isLoading = true;
+    try {
+      await this.expenseService.addExpense(this.newExpense).toPromise();
+      this.toastr.success('Gasto agregado con éxito', 'Éxito');
+      this.newExpense = {
+        description: '',
+        amount: 0,
+        date: '',
+        categoryId: this.categories.length > 0 ? this.categories[0].id : 0,
+      };
+      await this.loadExpenses();
+      await this.loadSummary();
+      this.calculateBalance();
+    } catch (error) {
+      this.toastr.error('Error al agregar el gasto', 'Error');
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
+  // Abrir modal de confirmación
+  openDeleteModal(id: number, type: 'expense' | 'category') {
+    this.idToDelete = id;
+    this.deleteType = type;
+    this.showDeleteModal = true;
+  }
+
+  // Cerrar modal de confirmación
+  closeDeleteModal() {
+    this.showDeleteModal = false;
+    this.idToDelete = null;
+    this.deleteType = null;
+  }
+
+  // Confirmar eliminación
+  async confirmDelete() {
+    if (this.idToDelete !== null && this.deleteType !== null) {
+      this.isLoading = true;
+      try {
+        if (this.deleteType === 'expense') {
+          await this.expenseService.deleteExpense(this.idToDelete).toPromise();
+          this.toastr.success('Gasto eliminado con éxito', 'Éxito');
+          await this.loadExpenses();
+          await this.loadSummary();
+          this.calculateBalance();
+        } else if (this.deleteType === 'category') {
+          await this.categoryService.deleteCategory(this.idToDelete).toPromise();
+          this.toastr.success('Categoría eliminada con éxito', 'Éxito');
+          await this.loadCategories();
+        }
+      } catch (error) {
+        const errorMessage =
+          this.deleteType === 'expense'
+            ? 'Error al eliminar el gasto'
+            : 'No se puede eliminar, porque está relacionada a un gasto';
+        this.toastr.error(errorMessage, 'Error');
+      } finally {
+        this.isLoading = false;
+        this.closeDeleteModal();
+      }
+    }
+  }
+
   async addCategory() {
     if (this.newCategory.trim()) {
       this.isLoading = true;
@@ -158,51 +238,55 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  async deleteCategory(id: number) {
-    if (confirm('¿Estás seguro de que deseas eliminar esta categoría?')) {
-      this.isLoading = true;
-      try {
-        await this.categoryService.deleteCategory(id).toPromise();
-        this.toastr.success('Categoría eliminada con éxito', 'Éxito');
-        await this.loadCategories();
-      } catch (error) {
-        this.toastr.error('No se puede eliminar, porque está relacionada a un gasto', 'Error');
-      } finally {
-        this.isLoading = false;
-      }
-    }
+  openEditModal(expense: any) {
+    console.log('Abrir modal de edición:', expense);
+    this.editExpense = { ...expense };
+    this.isEditModalOpen = true;
   }
 
-  async addExpense() {
+
+  closeEditModal() {
+    this.isEditModalOpen = false;
+    this.editExpense = { description: '', amount: 0, date: '', categoryId: 0 };
+  }
+
+  openEditCategoryModal(category: any) {
+    this.editCategory = { ...category };
+    this.isEditCategoryModalOpen = true;
+  }
+
+  closeEditCategoryModal() {
+    this.isEditCategoryModalOpen = false;
+    this.editCategory = { id: 0, name: '' };
+  }
+
+  async updateCategory() {
     this.isLoading = true;
     try {
-      await this.expenseService.addExpense(this.newExpense).toPromise();
-      this.toastr.success('Gasto agregado con éxito', 'Éxito');
-      this.newExpense = { description: '', amount: 0, date: '', categoryId: this.categories.length > 0 ? this.categories[0].id : 0 };
-      await this.loadExpenses();
-      await this.loadSummary();
-      this.calculateBalance();
+      await this.categoryService.updateCategory(this.editCategory.id, { name: this.editCategory.name }).toPromise();
+      this.toastr.success('Categoría actualizada con éxito', 'Éxito');
+      await this.loadCategories();
+      this.closeEditCategoryModal();
     } catch (error) {
-      this.toastr.error('Error al agregar el gasto', 'Error');
+      this.toastr.error('Error al actualizar la categoría', 'Error');
     } finally {
       this.isLoading = false;
     }
   }
 
-  async deleteExpense(id: number) {
-    if (confirm('¿Estás seguro de que deseas eliminar este gasto?')) {
-      this.isLoading = true;
-      try {
-        await this.expenseService.deleteExpense(id).toPromise();
-        this.toastr.success('Gasto eliminado con éxito', 'Éxito');
-        await this.loadExpenses();
-        await this.loadSummary();
-        this.calculateBalance();
-      } catch (error) {
-        this.toastr.error('Error al eliminar el gasto', 'Error');
-      } finally {
-        this.isLoading = false;
-      }
+  async updateExpense() {
+    this.isLoading = true;
+    try {
+      await this.expenseService.updateExpense(this.editExpense.id, this.editExpense).toPromise();
+      this.toastr.success('Gasto actualizado con éxito', 'Éxito');
+      await this.loadExpenses();
+      await this.loadSummary();
+      this.calculateBalance();
+      this.closeEditModal();
+    } catch (error) {
+      this.toastr.error('Error al actualizar el gasto', 'Error');
+    } finally {
+      this.isLoading = false;
     }
   }
 }

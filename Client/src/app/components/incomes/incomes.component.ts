@@ -5,17 +5,25 @@ import { catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
 
 @Component({
-    selector: 'app-incomes',
-    templateUrl: './incomes.component.html',
-    styleUrls: ['./incomes.component.css'],
-    standalone: false
+  selector: 'app-incomes',
+  templateUrl: './incomes.component.html',
+  styleUrls: ['./incomes.component.css'],
+  standalone: false
 })
 export class IncomesComponent implements OnInit {
   incomes: any[] = [];
   incomeSummary: any = { totalIncomes: 0, totalExpenses: 0, balance: 0 };
   isLoading = false;
   newIncome: any = { description: '', amount: 0, date: '' };
-  currentPage: number = 1; 
+  currentPage: number = 1;
+
+  // Variables para el modal de confirmación
+  showDeleteModal: boolean = false;
+  idToDelete: number | null = null;
+
+  // Variables para el modal de edición
+  showEditModal: boolean = false;
+  incomeToEdit: any = { id: null, description: '', amount: 0, date: '' };
 
   constructor(
     private incomeService: IncomeService,
@@ -27,7 +35,6 @@ export class IncomesComponent implements OnInit {
     this.loadIncomeSummary();
   }
 
- 
   loadIncomes(): void {
     this.isLoading = true;
     this.incomeService.getIncomes()
@@ -47,7 +54,6 @@ export class IncomesComponent implements OnInit {
       });
   }
 
- 
   loadIncomeSummary(): void {
     this.isLoading = true;
     this.incomeService.getIncomeSummary()
@@ -67,7 +73,6 @@ export class IncomesComponent implements OnInit {
       });
   }
 
-  
   addIncome(): void {
     if (!this.newIncome.description || !this.newIncome.amount || !this.newIncome.date) {
       this.toastr.error('Todos los campos son obligatorios.', 'Error');
@@ -85,7 +90,7 @@ export class IncomesComponent implements OnInit {
       .subscribe({
         next: () => {
           this.toastr.success('Ingreso agregado con éxito.', 'Éxito');
-          this.newIncome = { description: '', amount: 0, date: '' }; 
+          this.newIncome = { description: '', amount: 0, date: '' };
           this.loadIncomes();
           this.loadIncomeSummary();
         },
@@ -95,11 +100,20 @@ export class IncomesComponent implements OnInit {
       });
   }
 
- 
-  deleteIncome(id: number): void {
-    if (confirm('¿Estás seguro de que deseas eliminar este ingreso?')) {
+  openDeleteModal(id: number): void {
+    this.idToDelete = id;
+    this.showDeleteModal = true;
+  }
+
+  closeDeleteModal(): void {
+    this.showDeleteModal = false;
+    this.idToDelete = null;
+  }
+
+  confirmDelete(): void {
+    if (this.idToDelete !== null) {
       this.isLoading = true;
-      this.incomeService.deleteIncome(id)
+      this.incomeService.deleteIncome(this.idToDelete)
         .pipe(
           catchError((error) => {
             this.handleHttpError(error);
@@ -114,9 +128,47 @@ export class IncomesComponent implements OnInit {
           },
           complete: () => {
             this.isLoading = false;
+            this.closeDeleteModal();
           }
         });
     }
+  }
+
+  openEditModal(income: any): void {
+    this.incomeToEdit = { ...income };
+    this.showEditModal = true;
+  }
+
+  closeEditModal(): void {
+    this.showEditModal = false;
+    this.incomeToEdit = { id: null, description: '', amount: 0, date: '' };
+  }
+
+  confirmEdit(): void {
+    if (!this.incomeToEdit.description || !this.incomeToEdit.amount || !this.incomeToEdit.date) {
+      this.toastr.error('Todos los campos son obligatorios.', 'Error');
+      return;
+    }
+
+    this.isLoading = true;
+    this.incomeService.updateIncome(this.incomeToEdit.id, this.incomeToEdit)
+      .pipe(
+        catchError((error) => {
+          this.handleHttpError(error);
+          return throwError(() => error);
+        })
+      )
+      .subscribe({
+        next: () => {
+          this.toastr.success('Ingreso actualizado con éxito.', 'Éxito');
+          this.loadIncomes();
+          this.loadIncomeSummary();
+        },
+        complete: () => {
+          this.isLoading = false;
+          this.closeEditModal();
+        }
+      });
   }
 
   private handleHttpError(error: any): void {

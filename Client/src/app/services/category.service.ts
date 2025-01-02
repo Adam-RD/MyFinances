@@ -27,9 +27,11 @@ export class CategoryService {
     return this.http.post(this.apiUrl, category, { headers: this.getAuthHeaders() });
   }
 
+  updateCategory(id: number, category: { name: string }): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${id}`, category, { headers: this.getAuthHeaders() });
+  }
+
   deleteCategory(id: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`, { headers: this.getAuthHeaders() });
   }
-
 }
-

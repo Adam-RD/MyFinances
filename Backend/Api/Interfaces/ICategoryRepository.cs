@@ -8,5 +8,7 @@ namespace Api.Interfaces
         Task AddCategoryAsync(Category category);
         Task<Category> GetCategoryWithExpensesAsync(int categoryId, int userId);
         Task DeleteCategoryAsync(int categoryId, int userId);
+        Task<Category> GetCategoryByIdAsync(int categoryId, int userId);
+        Task UpdateCategoryAsync(Category updatedCategory, int userId);
     }
 }
