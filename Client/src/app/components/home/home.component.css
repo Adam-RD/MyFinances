@@ -153,3 +153,70 @@ canvas {
   color: #dc3545;
   font-weight: bold;
 }
+
+/* modales  */
+.modal {
+  display: block;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-dialog {
+  max-width: 70%;
+  margin: 1.5rem auto;
+}
+
+@media (max-width: 768px) {
+  .modal-dialog {
+    max-width: 60%;
+  }
+}
+
+@media (max-width: 576px) {
+  .modal-dialog {
+    max-width: 50%;
+    margin: 0.5rem auto;
+  }
+
+  .modal-content {
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  .modal-body {
+    overflow-y: auto;
+    max-height: 60vh;
+  }
+
+  .modal-header,
+  .modal-footer {
+    padding: 8px;
+  }
+
+  .modal-title {
+    font-size: 1rem;
+  }
+
+  .btn {
+    font-size: 0.85rem;
+    padding: 6px 10px;
+  }
+}
+
+@media (max-width: 400px) {
+  .modal-dialog {
+    max-width: 45%;
+  }
+
+  .modal-header,
+  .modal-footer {
+    padding: 6px;
+  }
+
+  .modal-body {
+    max-height: 50vh;
+  }
+
+  .btn {
+    font-size: 0.8rem;
+  }
+}

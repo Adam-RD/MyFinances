@@ -70,21 +70,17 @@
               </div>
 
               <div class="mb-3">
-                <label for="amount" class="form-label">Monto</label>
                 <input
-                  type="number"
-                  id="amount"
+                  type="text"
                   class="form-control"
-                  placeholder="Monto del ingreso"
-                  [(ngModel)]="newIncome.amount"
+                  placeholder="Monto"
+                  [ngModel]="formattedAmount"
+                  (ngModelChange)="onAmountChange($event)"
                   name="amount"
                   #amount="ngModel"
                   required
-                  min="0.01"
                 />
-                <div *ngIf="amount.invalid && amount.touched" class="text-danger">
-                  El monto debe ser mayor a 0.
-                </div>
+                <div *ngIf="amount.invalid && amount.touched" class="text-danger">Monto válido es requerido.</div>
               </div>
 
               <div class="mb-3">
@@ -137,7 +133,7 @@
                       <button class="btn btn-danger btn-sm" (click)="openDeleteModal(income.id)">Eliminar</button>
                     </div>
                   </td>
-                  
+
                 </tr>
               </tbody>
             </table>

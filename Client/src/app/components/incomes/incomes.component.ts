@@ -14,16 +14,15 @@ export class IncomesComponent implements OnInit {
   incomes: any[] = [];
   incomeSummary: any = { totalIncomes: 0, totalExpenses: 0, balance: 0 };
   isLoading = false;
-  newIncome: any = { description: '', amount: 0, date: '' };
+  newIncome: any = { description: '', amount: null, date: '' };
   currentPage: number = 1;
+  formattedAmount: string = '';
 
-  // Variables para el modal de confirmación
   showDeleteModal: boolean = false;
   idToDelete: number | null = null;
 
-  // Variables para el modal de edición
   showEditModal: boolean = false;
-  incomeToEdit: any = { id: null, description: '', amount: 0, date: '' };
+  incomeToEdit: any = { id: null, description: '', amount: null, date: '' };
 
   constructor(
     private incomeService: IncomeService,
@@ -34,6 +33,25 @@ export class IncomesComponent implements OnInit {
     this.loadIncomes();
     this.loadIncomeSummary();
   }
+
+  onAmountChange(value: string) {
+    if (!/^[0-9,]*$/.test(value)) {
+      this.toastr.error('Solo se permiten caracteres numéricos.', 'Error');
+      return;
+    }
+
+    let numericValue = value.replace(/[^0-9]/g, '');
+    if (!numericValue) {
+      this.formattedAmount = '';
+      this.newIncome.amount = null;
+      return;
+    }
+
+    let num = parseFloat(numericValue);
+    this.formattedAmount = num.toLocaleString('es-ES');
+    this.newIncome.amount = num;
+  }
+
 
   loadIncomes(): void {
     this.isLoading = true;

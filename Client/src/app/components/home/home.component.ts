@@ -26,17 +26,16 @@ export class HomeComponent implements OnInit {
   totalBalance: number = 0;
   isLoading = false;
   newCategory = '';
-  newExpense: any = { description: '', amount: 0, date: '', categoryId: 0 };
+  newExpense: any = { description: '', amount: null, date: '', categoryId: 0 };
+  formattedAmount: string = '';
   maxDate: string = '';
-
 
   showDeleteModal: boolean = false;
   idToDelete: number | null = null;
   deleteType: 'expense' | 'category' | null = null;
 
   isEditModalOpen: boolean = false;
-  editExpense: any = { description: '', amount: 0, date: '', categoryId: 0 };
-
+  editExpense: any = { description: '', amount: null, date: '', categoryId: 0 };
 
   isEditCategoryModalOpen: boolean = false;
   editCategory: any = { id: 0, name: '' };
@@ -56,10 +55,29 @@ export class HomeComponent implements OnInit {
   setMaxDate() {
     const currentDate = new Date();
     const year = currentDate.getFullYear();
-    const month = (currentDate.getMonth() + 1).toString().padStart(2, '0'); // Meses van de 0 a 11
+    const month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
     const day = currentDate.getDate().toString().padStart(2, '0');
     this.maxDate = `${year}-${month}-${day}`;
   }
+
+  onAmountChange(value: string) {
+    if (!/^[0-9,]*$/.test(value)) {
+      this.toastr.error('Solo se permiten caracteres numéricos.', 'Error');
+      return;
+    }
+
+    let numericValue = value.replace(/[^0-9]/g, '');
+    if (!numericValue) {
+      this.formattedAmount = '';
+      this.newExpense.amount = null;
+      return;
+    }
+
+    let num = parseFloat(numericValue);
+    this.formattedAmount = num.toLocaleString('es-ES');
+    this.newExpense.amount = num;
+  }
+
 
   async initializeData() {
     this.isLoading = true;
