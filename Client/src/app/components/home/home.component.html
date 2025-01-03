@@ -188,8 +188,8 @@
               <td>{{ expense.date | date }}</td>
               <td>{{ expense.categoryName }}</td>
               <td>
-                <button class="btn btn-warning btn-sm" (click)="openEditModal(expense)">Editar</button>
-                <button class="btn btn-danger btn-sm mt-3" (click)="openDeleteModal(expense.id, 'expense')">Eliminar</button>
+                <button class="btn btn-warning btn-sm me-2" (click)="openEditModal(expense)">Editar</button>
+                <button class="btn btn-danger btn-sm" (click)="openDeleteModal(expense.id, 'expense')">Eliminar</button>
               </td>
             </tr>
           </tbody>
