@@ -195,83 +195,79 @@
             </tr>
           </tbody>
         </table>
-
+        <!-- Modal editExpenses -->
         <div
-  class="modal"
-  tabindex="-1"
-  role="dialog"
-  [ngClass]="{ show: isEditModalOpen }"
-  style="display: block;"
-  *ngIf="isEditModalOpen"
->
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Editar Gasto</h5>
-        <button type="button" class="btn-close" (click)="closeEditModal()"></button>
-      </div>
-      <div class="modal-body">
-        <form>
-          <!-- Campo para la descripción -->
-          <div class="mb-3">
-            <label for="description" class="form-label">Descripción</label>
-            <input
-              type="text"
-              class="form-control"
-              [(ngModel)]="editExpense.description"
-              name="description"
-              required
-            />
-          </div>
-
-          <!-- Campo para el monto -->
-          <div class="mb-3">
-            <label for="amount" class="form-label">Monto</label>
-            <input
-              type="number"
-              class="form-control"
-              [(ngModel)]="editExpense.amount"
-              name="amount"
-              required
-            />
-          </div>
-
-          <!-- Campo para la fecha -->
-          <div class="mb-3">
-            <label for="date" class="form-label">Fecha</label>
-            <input
-              type="date"
-              class="form-control"
-              [(ngModel)]="editExpense.date"
-              name="date"
-              [max]="maxDate"
-              required
-            />
-          </div>
-
-          <!-- Campo para seleccionar categoría -->
-          <div class="mb-3">
-            <label for="categoryId" class="form-label">Categoría</label>
-            <select
-              class="form-select"
-              [(ngModel)]="editExpense.categoryId"
-              name="categoryId"
-              required
+            class="modal fade"
+              tabindex="-1"
+              role="dialog"
+              [ngClass]="{ show: isEditModalOpen }"
+              style="display: block;"
+              *ngIf="isEditModalOpen"
+              data-bs-backdrop="static"
+              data-bs-keyboard="false"
             >
-              <option *ngFor="let category of categories" [value]="category.id">
-                {{ category.name }}
-              </option>
-            </select>
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Editar Gasto</h5>
+              <button type="button" class="btn-close" (click)="closeEditModal()"></button>
+            </div>
+            <div class="modal-body">
+              <form>
+                <div class="mb-3">
+                  <label for="description" class="form-label">Descripción</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    [(ngModel)]="editExpense.description"
+                    name="description"
+                    required
+                  />
+                </div>
+                <div class="mb-3">
+                  <label for="amount" class="form-label">Monto</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    [(ngModel)]="editExpense.amount"
+                    name="amount"
+                    required
+                  />
+                </div>
+                <div class="mb-3">
+                  <label for="date" class="form-label">Fecha</label>
+                  <input
+                    type="date"
+                    class="form-control"
+                    [(ngModel)]="editExpense.date"
+                    name="date"
+                    [max]="maxDate"
+                    required
+                  />
+                </div>
+                <div class="mb-3">
+                  <label for="categoryId" class="form-label">Categoría</label>
+                  <select
+                    class="form-select"
+                    [(ngModel)]="editExpense.categoryId"
+                    name="categoryId"
+                    required
+                  >
+                    <option *ngFor="let category of categories" [value]="category.id">
+                      {{ category.name }}
+                    </option>
+                  </select>
+                </div>
+              </form>
+            </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" (click)="closeEditModal()">Cancelar</button>
+                  <button type="button" class="btn btn-primary" (click)="updateExpense()">Guardar Cambios</button>
+                </div>
+            </div>
+           </div>
           </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" (click)="closeEditModal()">Cancelar</button>
-        <button type="button" class="btn btn-primary" (click)="updateExpense()">Guardar Cambios</button>
-      </div>
-    </div>
-  </div>
-</div>
+
 
         <pagination-controls
           (pageChange)="currentPage = $event"
