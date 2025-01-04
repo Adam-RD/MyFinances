@@ -3,6 +3,8 @@ import { IncomeService } from '../../services/income.service';
 import { ToastrService } from 'ngx-toastr';
 import { catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 
 @Component({
   selector: 'app-incomes',
@@ -198,4 +200,32 @@ export class IncomesComponent implements OnInit {
       this.toastr.error('Error desconocido.', 'Error');
     }
   }
+
+  // Exportar a Excel
+
+  exportToExcel(): void {
+    const ws: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet([
+        ["#", "Descripción", "Monto", "Fecha"]
+    ]);
+
+
+    this.incomes.forEach((income, index) => {
+        XLSX.utils.sheet_add_aoa(ws, [[
+            index + 1,
+            income.description,
+            income.amount,
+            new Date(income.date).toLocaleDateString()
+        ]], { origin: -1 });
+    });
+
+
+    const wb: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Lista de Ingresos');
+
+
+    const excelBuffer: any = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+    const data: Blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    saveAs(data, 'Lista_Ingresos.xlsx');
+}
+
 }

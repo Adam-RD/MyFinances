@@ -3,6 +3,9 @@ import { CategoryService } from '../../services/category.service';
 import { ExpenseService } from '../../services/expense.service';
 import { ToastrService } from 'ngx-toastr';
 import { IncomeService } from '../../services/income.service';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
+
 
 @Component({
   selector: 'app-home',
@@ -307,4 +310,32 @@ export class HomeComponent implements OnInit {
       this.isLoading = false;
     }
   }
+// Exportar a Excel
+  exportToExcel(): void {
+  
+    const ws: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet([
+        ["#", "Descripción", "Monto", "Fecha", "Categoría"]
+    ]);
+
+
+    this.expenses.forEach((expense, index) => {
+        XLSX.utils.sheet_add_aoa(ws, [[
+            index + 1,
+            expense.description,
+            expense.amount,
+            new Date(expense.date).toLocaleDateString(),
+            expense.categoryName
+        ]], { origin: -1 });
+    });
+
+
+    const wb: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Detalles de Gastos');
+
+
+    const excelBuffer: any = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+    const data: Blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    saveAs(data, 'Detalles_Gastos.xlsx');
+}
+
 }

@@ -109,7 +109,12 @@
 
       <div class="col-md-6">
         <div class="card">
+
           <div class="card-header bg-success text-white">Lista de Ingresos</div>
+          <button class="btn btn-warning mb-3 mt-2" (click)="exportToExcel()">
+            Exportar a Excel 📊
+          </button>
+
           <div class="card-body">
             <table class="table table-striped text-center">
               <thead>
@@ -121,6 +126,7 @@
                   <th>Acción</th>
                 </tr>
               </thead>
+
               <tbody>
                 <tr *ngFor="let income of incomes | paginate: { itemsPerPage: 4, currentPage: currentPage }; let i = index">
                   <td>{{ i + 1 + (currentPage - 1) * 4 }}</td>
@@ -137,6 +143,7 @@
                 </tr>
               </tbody>
             </table>
+
 
             <pagination-controls
               (pageChange)="currentPage = $event"

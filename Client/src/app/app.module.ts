@@ -16,6 +16,7 @@ import { NgxPaginationModule } from 'ngx-pagination';
 import { IncomesComponent } from './components/incomes/incomes.component';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 
+
 @NgModule({ declarations: [
         AppComponent,
         LoginComponent,
