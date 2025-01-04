@@ -50,60 +50,74 @@
   margin-top: 20px;
 }
 
-canvas {
-  max-height: 400px;
-  max-width: 100%;
-  border-radius: 0.5rem;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+/* ==== ESTILOS GENERALES PARA TABLAS ==== */
+.table-container {
+  overflow-x: auto;
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* Bordes redondeados y sombras para las tablas */
 .table {
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   width: 100%;
   margin-bottom: 1rem;
   background-color: #ffffff;
   border: 1px solid #ddd;
   border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
 }
 
+/* ==== ESTILOS PARA LAS CABECERAS ==== */
+.table thead th {
+  background: linear-gradient(90deg, #007bff, #6610f2);
+  color: white;
+  font-weight: bold;
+  text-transform: uppercase;
+  text-align: center;
+  padding: 12px;
+  border-bottom: 2px solid #444;
+}
+
+/* ==== CELDAS Y FILAS ==== */
 .table th,
 .table td {
   padding: 1rem;
   vertical-align: middle;
-  border: 1px solid #ccc;
-}
-
-.table thead th {
-  background-color: #343a40;
-  color: #ffffff;
-  font-weight: bold;
-  text-transform: uppercase;
-  text-align: center;
-  border-bottom: 2px solid #444;
+  border-bottom: 1px solid #ddd;
 }
 
 .table tbody tr:nth-of-type(odd) {
-  background-color: #f7f7f7;
+  background-color: #f8f9fa;
+}
+
+.table tbody tr:nth-of-type(even) {
+  background-color: #e9ecef;
 }
 
 .table tbody tr:hover {
-  background-color: #e2e6ea;
-  transition: background-color 0.3s ease;
+  background-color: #d6d8db;
+  transition: background-color 0.3s ease-in-out;
 }
 
+/* Alinear los números y textos */
 .table th,
 .table td {
-  text-align: left;
+  text-align: center;
   padding-left: 1.5rem;
 }
 
+/* ==== FORMATO PARA COLUMNAS IMPORTANTES ==== */
 .table td.important {
   font-weight: bold;
   color: #17a2b8;
 }
 
-/* Botones estilizados más pequeños y en grupo */
+/* ==== BOTONES DENTRO DE TABLAS ==== */
 .table .btn-group {
   display: flex;
   justify-content: center;
@@ -111,10 +125,10 @@ canvas {
 }
 
 .table .btn {
-  padding: 0.25rem 0.5rem;
-  font-size: 0.8rem;
-  border-radius: 3px;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.85rem;
+  border-radius: 5px;
+  transition: all 0.3s ease-in-out;
 }
 
 .table .btn-primary {
@@ -126,7 +140,6 @@ canvas {
 .table .btn-primary:hover {
   background-color: #0056b3;
   transform: scale(1.05);
-  color: white;
 }
 
 .table .btn-danger {
@@ -138,16 +151,16 @@ canvas {
 .table .btn-danger:hover {
   background-color: #d9363e;
   transform: scale(1.05);
-  color: white;
 }
-/* Modales */
+
+/* ==== MODALES MEJORADOS ==== */
 .modal-content {
   border-radius: 10px;
   box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
 }
 
 .modal-header {
-  background-color: #343a40;
+  background: linear-gradient(90deg, #343a40, #6c757d);
   color: #ffffff;
   border-bottom: 2px solid #ffc107;
 }
@@ -174,7 +187,7 @@ canvas {
   transform: scale(1.05);
 }
 
-/* Responsivo */
+/* ==== RESPONSIVIDAD ==== */
 @media (max-width: 768px) {
   .table th,
   .table td {
@@ -191,3 +204,23 @@ canvas {
     font-size: 1.5rem;
   }
 }
+.export-excel-btn {
+  width: 100%;
+  padding: 12px;
+  font-size: 1rem;
+  font-weight: bold;
+  border-radius: 5px;
+  border: none;
+  background: linear-gradient(90deg, #1fb327, #1adb0c);
+  color: white;
+  transition: all 0.3s ease-in-out;
+  display: block;
+  text-align: center;
+}
+
+.export-excel-btn:hover {
+  background: linear-gradient(90deg, #ff5722, #d84315);
+  transform: scale(1.02);
+  color: white;
+}
+

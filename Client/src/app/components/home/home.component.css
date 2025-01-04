@@ -230,4 +230,23 @@ canvas {
 }
 
 
+.export-excel-btn {
+  width: 100%; /* Ocupar todo el ancho */
+  padding: 12px;
+  font-size: 1rem;
+  font-weight: bold;
+  border-radius: 5px;
+  border: none;
+  background: linear-gradient(90deg, #1fb327, #1adb0c);
+  color: white;
+  transition: all 0.3s ease-in-out;
+  display: block; /* Asegurar que se expanda */
+  text-align: center;
+}
+
+.export-excel-btn:hover {
+  background: linear-gradient(90deg, #ff5722, #d84315);
+  transform: scale(1.02);
+  color: white;
+}
 

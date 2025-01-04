@@ -111,13 +111,15 @@
         <div class="card">
 
           <div class="card-header bg-success text-white">Lista de Ingresos</div>
-          <button class="btn btn-warning mb-3 mt-2" (click)="exportToExcel()">
-            Exportar a Excel 📊
-          </button>
+
 
           <div class="card-body">
+            <button class="btn btn-warning export-excel-btn mb-3" (click)="exportToExcel()">
+              📊 Exportar a Excel
+            </button>
             <table class="table table-striped text-center">
-              <thead>
+                <thead>
+
                 <tr>
                   <th>#</th>
                   <th>Descripción</th>
