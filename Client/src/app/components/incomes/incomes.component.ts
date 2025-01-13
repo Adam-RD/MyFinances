@@ -5,6 +5,8 @@ import { catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import { IncomeResponse } from '../../Models/IncomeResponse';
+import { IncomeSummary } from '../../Models/IncomeSummary';
 
 @Component({
   selector: 'app-incomes',
@@ -14,9 +16,9 @@ import { saveAs } from 'file-saver';
 })
 export class IncomesComponent implements OnInit {
   incomes: any[] = [];
-  incomeSummary: any = { totalIncomes: 0, totalExpenses: 0, balance: 0 };
+  incomeSummary: IncomeSummary = { totalIncomes: 0, totalExpenses: 0, balance: 0 };
   isLoading = false;
-  newIncome: any = { description: '', amount: null, date: '' };
+  newIncome: IncomeResponse= { description: '', amount: null, date: '' };
   currentPage: number = 1;
   formattedAmount: string = '';
 
@@ -53,6 +55,8 @@ export class IncomesComponent implements OnInit {
     this.formattedAmount = num.toLocaleString('es-ES');
     this.newIncome.amount = num;
   }
+
+
 
 
   loadIncomes(): void {

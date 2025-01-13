@@ -25,7 +25,7 @@
         </li>
       </ul>
       <ul class="navbar-nav ms-auto align-items-center">
-            
+
         <li class="nav-item">
           <a class="nav-link text-danger fw-semibold" routerLink="/login">Logout</a>
         </li>
@@ -78,7 +78,7 @@
 
   <div *ngIf="chartData.length > 0" class="legend-table-container mt-4">
     <div class="text-center mb-3 p-2 bg-light rounded shadow-sm">
-      <strong class="fs-5 text-dark">Total de gastos: </strong> 
+      <strong class="fs-5 text-dark">Total de gastos: </strong>
       <span class="fs-5 text-success fw-bold">{{ totalExpenses | currency }}</span>
     </div>
     <h5 class="text-secondary text-center fw-bold">Leyenda</h5>
@@ -93,9 +93,9 @@
       <tbody>
         <tr *ngFor="let item of chartData; let i = index" class="align-middle">
           <td>
-            <div 
-              class="legend-color mx-auto rounded-circle" 
-              [style.background-color]="colorScheme.domain[i]" 
+            <div
+              class="legend-color mx-auto rounded-circle"
+              [style.background-color]="colorScheme.domain[i]"
               style="height: 20px; width: 20px;"
             ></div>
           </td>
